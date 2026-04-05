@@ -137,7 +137,6 @@ C:\Users\marco\source\repos\IncidenciasApp\Api\obj\Debug\net8.0\staticwebassets.
 C:\Users\marco\source\repos\IncidenciasApp\Api\obj\Debug\net8.0\staticwebassets.development.json
 C:\Users\marco\source\repos\IncidenciasApp\Api\obj\Debug\net8.0\staticwebassets.build.endpoints.json
 C:\Users\marco\source\repos\IncidenciasApp\Api\obj\Debug\net8.0\swae.build.ex.cache
-C:\Users\marco\source\repos\IncidenciasApp\Api\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt
 C:\Users\marco\source\repos\IncidenciasApp\Api\obj\Debug\net8.0\Api.csproj.Up2Date
 C:\Users\marco\source\repos\IncidenciasApp\Api\obj\Debug\net8.0\Api.dll
 C:\Users\marco\source\repos\IncidenciasApp\Api\obj\Debug\net8.0\refint\Api.dll
