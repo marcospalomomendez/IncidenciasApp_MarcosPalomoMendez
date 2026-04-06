@@ -6,7 +6,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Security.Cryptography;
 using System.Text;
 
 namespace Api.Controllers;
@@ -38,7 +37,6 @@ public class AuthController : ControllerBase
 
         _context.Usuarios.Add(usuario);
         await _context.SaveChangesAsync();
-
         return Ok("Usuario registrado correctamente.");
     }
 
@@ -48,7 +46,7 @@ public class AuthController : ControllerBase
         var usuario = await _context.Usuarios
             .FirstOrDefaultAsync(u => u.Email == dto.Email);
 
-        if (usuario == null || usuario.PasswordHash != HashPassword(dto.Password))
+        if (usuario == null || !VerifyPassword(dto.Password, usuario.PasswordHash))
             return Unauthorized("Credenciales incorrectas.");
 
         var token = GenerarToken(usuario);
@@ -57,8 +55,12 @@ public class AuthController : ControllerBase
 
     private string HashPassword(string password)
     {
-        var bytes = SHA256.HashData(Encoding.UTF8.GetBytes(password));
-        return Convert.ToBase64String(bytes);
+        return BCrypt.Net.BCrypt.HashPassword(password);
+    }
+
+    private bool VerifyPassword(string password, string hash)
+    {
+        return BCrypt.Net.BCrypt.Verify(password, hash);
     }
 
     private string GenerarToken(Usuario usuario)

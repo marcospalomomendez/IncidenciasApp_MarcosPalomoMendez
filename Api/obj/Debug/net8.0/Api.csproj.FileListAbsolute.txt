@@ -143,3 +143,4 @@ C:\Users\marco\source\repos\IncidenciasApp\Api\obj\Debug\net8.0\refint\Api.dll
 C:\Users\marco\source\repos\IncidenciasApp\Api\obj\Debug\net8.0\Api.pdb
 C:\Users\marco\source\repos\IncidenciasApp\Api\obj\Debug\net8.0\Api.genruntimeconfig.cache
 C:\Users\marco\source\repos\IncidenciasApp\Api\obj\Debug\net8.0\ref\Api.dll
+C:\Users\marco\source\repos\IncidenciasApp\Api\bin\Debug\net8.0\BCrypt.Net-Next.dll
