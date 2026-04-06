@@ -72,7 +72,7 @@ public class AuthController : ControllerBase
         };
 
         var key = new SymmetricSecurityKey(
-            Encoding.UTF8.GetBytes("ClaveSecretaSuperSegura123456789!"));
+            Encoding.UTF8.GetBytes("M4rc0sP4L0M0M3nD3zP4ssw0rDSup3rSSS3egur4!"));
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
         var token = new JwtSecurityToken(
@@ -83,6 +83,3 @@ public class AuthController : ControllerBase
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
 }
-
-public record RegisterDto(string Nombre, string Email, string Password);
-public record LoginDto(string Email, string Password);
