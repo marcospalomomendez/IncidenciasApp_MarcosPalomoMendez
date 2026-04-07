@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\marco\\source\\repos\\IncidenciasApp\\Shared\\Shared.csproj": {}
+    "C:\\Users\\marco\\Source\\Repos\\IncidenciasApp_MarcosPalomoMendez\\Shared\\Shared.csproj": {}
   },
   "projects": {
-    "C:\\Users\\marco\\source\\repos\\IncidenciasApp\\Shared\\Shared.csproj": {
+    "C:\\Users\\marco\\Source\\Repos\\IncidenciasApp_MarcosPalomoMendez\\Shared\\Shared.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\marco\\source\\repos\\IncidenciasApp\\Shared\\Shared.csproj",
+        "projectUniqueName": "C:\\Users\\marco\\Source\\Repos\\IncidenciasApp_MarcosPalomoMendez\\Shared\\Shared.csproj",
         "projectName": "Shared",
-        "projectPath": "C:\\Users\\marco\\source\\repos\\IncidenciasApp\\Shared\\Shared.csproj",
+        "projectPath": "C:\\Users\\marco\\Source\\Repos\\IncidenciasApp_MarcosPalomoMendez\\Shared\\Shared.csproj",
         "packagesPath": "C:\\Users\\marco\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\marco\\source\\repos\\IncidenciasApp\\Shared\\obj\\",
+        "outputPath": "C:\\Users\\marco\\Source\\Repos\\IncidenciasApp_MarcosPalomoMendez\\Shared\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

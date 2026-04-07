@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\marco\\source\\repos\\IncidenciasApp\\Web\\Web.csproj": {}
+    "C:\\Users\\marco\\Source\\Repos\\IncidenciasApp_MarcosPalomoMendez\\Web\\Web.csproj": {}
   },
   "projects": {
-    "C:\\Users\\marco\\source\\repos\\IncidenciasApp\\Web\\Web.csproj": {
+    "C:\\Users\\marco\\Source\\Repos\\IncidenciasApp_MarcosPalomoMendez\\Web\\Web.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\marco\\source\\repos\\IncidenciasApp\\Web\\Web.csproj",
+        "projectUniqueName": "C:\\Users\\marco\\Source\\Repos\\IncidenciasApp_MarcosPalomoMendez\\Web\\Web.csproj",
         "projectName": "Web",
-        "projectPath": "C:\\Users\\marco\\source\\repos\\IncidenciasApp\\Web\\Web.csproj",
+        "projectPath": "C:\\Users\\marco\\Source\\Repos\\IncidenciasApp_MarcosPalomoMendez\\Web\\Web.csproj",
         "packagesPath": "C:\\Users\\marco\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\marco\\source\\repos\\IncidenciasApp\\Web\\obj\\",
+        "outputPath": "C:\\Users\\marco\\Source\\Repos\\IncidenciasApp_MarcosPalomoMendez\\Web\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

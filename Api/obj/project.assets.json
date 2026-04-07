@@ -3212,11 +3212,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\marco\\source\\repos\\IncidenciasApp\\Api\\Api.csproj",
+      "projectUniqueName": "C:\\Users\\marco\\Source\\Repos\\IncidenciasApp_MarcosPalomoMendez\\Api\\Api.csproj",
       "projectName": "Api",
-      "projectPath": "C:\\Users\\marco\\source\\repos\\IncidenciasApp\\Api\\Api.csproj",
+      "projectPath": "C:\\Users\\marco\\Source\\Repos\\IncidenciasApp_MarcosPalomoMendez\\Api\\Api.csproj",
       "packagesPath": "C:\\Users\\marco\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\marco\\source\\repos\\IncidenciasApp\\Api\\obj\\",
+      "outputPath": "C:\\Users\\marco\\Source\\Repos\\IncidenciasApp_MarcosPalomoMendez\\Api\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

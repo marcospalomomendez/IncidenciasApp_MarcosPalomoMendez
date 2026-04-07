@@ -20,13 +20,14 @@ public class AuthController : ControllerBase
     {
         _context = context;
     }
-
+    // POST: api/auth/registro
     [HttpPost("registro")]
     public async Task<IActionResult> Registro([FromBody] RegisterDto dto)
     {
+        // Verificar que el email no esté registrado
         if (await _context.Usuarios.AnyAsync(u => u.Email == dto.Email))
             return BadRequest("El email ya está registrado.");
-
+        // Crear el nuevo usuario
         var usuario = new Usuario
         {
             Nombre = dto.Nombre,
@@ -34,25 +35,26 @@ public class AuthController : ControllerBase
             PasswordHash = HashPassword(dto.Password),
             Rol = "Usuario"
         };
-
+        // Guardar el usuario en la base de datos
         _context.Usuarios.Add(usuario);
         await _context.SaveChangesAsync();
         return Ok("Usuario registrado correctamente.");
     }
-
+    // POST: api/auth/login
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginDto dto)
     {
+        // Buscar el usuario por email
         var usuario = await _context.Usuarios
             .FirstOrDefaultAsync(u => u.Email == dto.Email);
-
+        // Verificar que el usuario exista y que la contraseña sea correcta
         if (usuario == null || !VerifyPassword(dto.Password, usuario.PasswordHash))
             return Unauthorized("Credenciales incorrectas.");
-
+        // Generar el token JWT
         var token = GenerarToken(usuario);
         return Ok(new { token, rol = usuario.Rol, nombre = usuario.Nombre });
     }
-
+    // Métodos auxiliares para hashing de contraseñas y generación de tokens
     private string HashPassword(string password)
     {
         return BCrypt.Net.BCrypt.HashPassword(password);
@@ -65,6 +67,7 @@ public class AuthController : ControllerBase
 
     private string GenerarToken(Usuario usuario)
     {
+        // Crear los claims para el token
         var claims = new[]
         {
             new Claim(ClaimTypes.NameIdentifier, usuario.Id.ToString()),
@@ -72,11 +75,11 @@ public class AuthController : ControllerBase
             new Claim(ClaimTypes.Role, usuario.Rol),
             new Claim(ClaimTypes.Name, usuario.Nombre)
         };
-
+        // Crear la clave de seguridad y las credenciales de firma
         var key = new SymmetricSecurityKey(
             Encoding.UTF8.GetBytes("M4rc0sP4L0M0M3nD3zP4ssw0rDSup3rSSS3egur4!"));
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
+        // Crear el token JWT
         var token = new JwtSecurityToken(
             claims: claims,
             expires: DateTime.Now.AddHours(8),
