@@ -29,7 +29,7 @@ public class IncidenciasController : ControllerBase
             .ToListAsync();
         return Ok(incidencias);
     }
-    // GET: api/Incidencias/5
+    // GET: api/Incidencias/{id}
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(int id)
     {

@@ -1,0 +1,46 @@
+﻿@page
+@model Web.Pages.Incidencias.CrearModel
+@{
+    ViewData["Title"] = "Nueva Incidencia";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Nueva Incidencia</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+</head>
+<body>
+    <div class="container mt-4">
+        <h2>Nueva Incidencia</h2>
+
+        @if (!string.IsNullOrEmpty(Model.Error))
+        {
+            <div class="alert alert-danger">@Model.Error</div>
+        }
+
+        <form method="post">
+            <div class="mb-3">
+                <label>Título</label>
+                <input type="text" name="Titulo" class="form-control" required />
+            </div>
+            <div class="mb-3">
+                <label>Descripción</label>
+                <textarea name="Descripcion" class="form-control" rows="4" required></textarea>
+            </div>
+            <div class="mb-3">
+                <label>Prioridad</label>
+                <select name="Prioridad" class="form-select">
+                    <option value="Baja">Baja</option>
+                    <option value="Media" selected>Media</option>
+                    <option value="Alta">Alta</option>
+                    <option value="Critica">Crítica</option>
+                </select>
+            </div>
+            <a href="/Incidencias/Index" class="btn btn-secondary">Cancelar</a>
+            <button type="submit" class="btn btn-primary">Crear</button>
+        </form>
+    </div>
+</body>
+</html>

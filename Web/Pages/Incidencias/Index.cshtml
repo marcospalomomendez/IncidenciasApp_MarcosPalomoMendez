@@ -1,0 +1,57 @@
+﻿@page
+@model Web.Pages.Incidencias.IndexModel
+@{
+    ViewData["Title"] = "Mis Incidencias";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Incidencias</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+</head>
+<body>
+    <div class="container mt-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2>Incidencias</h2>
+            <div>
+                <span class="me-3">Hola, @Model.NombreUsuario (@Model.Rol)</span>
+                <a href="/Incidencias/Crear" class="btn btn-success me-2">Nueva incidencia</a>
+                <a href="/Login" class="btn btn-outline-secondary">Cerrar sesión</a>
+            </div>
+        </div>
+
+        @if (!Model.Incidencias.Any())
+        {
+            <div class="alert alert-info">No hay incidencias registradas.</div>
+        }
+        else
+        {
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Título</th>
+                        <th>Estado</th>
+                        <th>Prioridad</th>
+                        <th>Fecha</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var i in Model.Incidencias)
+                    {
+                        <tr>
+                            <td>@i.Id</td>
+                            <td>@i.Titulo</td>
+                            <td><span class="badge bg-primary">@i.Estado</span></td>
+                            <td>@i.Prioridad</td>
+                            <td>@i.FechaCreacion.ToString("dd/MM/yyyy")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
+</body>
+</html>

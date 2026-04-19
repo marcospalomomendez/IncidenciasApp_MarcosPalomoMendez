@@ -42,8 +42,7 @@ builder.Services.AddSwaggerGen(c =>
 });
 // Base de datos SQLite
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlite("Data Source=incidencias.db"));
-
+options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 // Autenticación JWT
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>

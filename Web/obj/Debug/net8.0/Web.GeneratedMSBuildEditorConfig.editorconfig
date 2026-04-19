@@ -26,8 +26,20 @@ build_property.EnableCodeStyleSeverity =
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRXJyb3IuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
+[C:/Users/marco/Source/Repos/IncidenciasApp_MarcosPalomoMendez/Web/Pages/Incidencias/Crear.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcSW5jaWRlbmNpYXNcQ3JlYXIuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/marco/Source/Repos/IncidenciasApp_MarcosPalomoMendez/Web/Pages/Incidencias/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcSW5jaWRlbmNpYXNcSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
 [C:/Users/marco/Source/Repos/IncidenciasApp_MarcosPalomoMendez/Web/Pages/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/marco/Source/Repos/IncidenciasApp_MarcosPalomoMendez/Web/Pages/Login.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcTG9naW4uY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/marco/Source/Repos/IncidenciasApp_MarcosPalomoMendez/Web/Pages/Privacy.cshtml]
