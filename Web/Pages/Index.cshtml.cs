@@ -1,20 +1,22 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace Web.Pages
+namespace Web.Pages;
+
+public class IndexModel : PageModel
 {
-    public class IndexModel : PageModel
+    public IActionResult OnGet()
     {
-        private readonly ILogger<IndexModel> _logger;
+        var rol = HttpContext.Session.GetString("Rol");
 
-        public IndexModel(ILogger<IndexModel> logger)
+        if (string.IsNullOrEmpty(rol))
+            return RedirectToPage("/Login");
+
+        return rol switch
         {
-            _logger = logger;
-        }
-
-        public void OnGet()
-        {
-
-        }
+            "Admin" => RedirectToPage("/Admin/Index"),
+            "Tecnico" => RedirectToPage("/Tecnico/Index"),
+            _ => RedirectToPage("/Usuario/Index")
+        };
     }
 }

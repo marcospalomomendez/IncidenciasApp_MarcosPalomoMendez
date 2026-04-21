@@ -1,0 +1,68 @@
+﻿@page
+@model Web.Pages.Tecnico.IndexModel
+@{
+    ViewData["Title"] = "Panel Técnico";
+}
+
+<div class="container mt-4">
+    <h2 class="mb-4">Panel Técnico</h2>
+
+    @foreach (var grupo in Model.Incidencias.GroupBy(i => i.Estado))
+    {
+        <h4 class="mt-4">
+            <span class="badge
+                    @(grupo.Key == "Abierta" ? "bg-success" :
+                                    grupo.Key == "EnProceso" ? "bg-warning text-dark" :
+                                    grupo.Key == "Resuelta" ? "bg-info" : "bg-secondary")">
+            @grupo.Key
+        </span>
+        <small class="text-muted fs-6">(@grupo.Count() incidencias)</small>
+    </h4>
+
+        <table class="table table-bordered table-hover mb-4">
+            <thead class="table-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Título</th>
+                    <th>Prioridad</th>
+                    <th>Técnico asignado</th>
+                    <th>Detalle Incidencia</th>
+                    <th>Fecha</th>
+                    <th>Acción</th>
+                </tr>
+            </thead>
+            <tbody>
+            @foreach (var i in grupo.OrderByDescending(x => x.FechaCreacion))
+                {
+                    <tr>
+                        <td>@i.Id</td>
+                        <td>@i.Titulo</td>
+                        <td>
+                            <span class="badge
+                                        @(i.Prioridad == "Critica" ? "bg-danger" :
+                                                                    i.Prioridad == "Alta" ? "bg-warning text-dark" :
+                                                                    i.Prioridad == "Media" ? "bg-primary" : "bg-secondary")">
+                        @i.Prioridad
+                    </span>
+                </td>
+                <td>@(i.TecnicoAsignadoId.HasValue ? "Asignada" : "Sin asignar")</td>
+                <td><a href="/Tecnico/Detalle/@i.Id" class="btn btn-sm btn-outline-primary">Ver detalle</a></td>
+                <td>@i.FechaCreacion.ToString("dd/MM/yyyy HH:mm")</td>
+                <td>
+                    <form method="post">
+                        <input type="hidden" name="id" value="@i.Id" />
+                        <select name="nuevoEstado" class="form-select form-select-sm d-inline w-auto">
+                            <option value="Abierta">Abierta</option>
+                            <option value="EnProceso">En Proceso</option>
+                            <option value="Resuelta">Resuelta</option>
+                            <option value="Cerrada">Cerrada</option>
+                        </select>
+                        <button type="submit" class="btn btn-sm btn-primary ms-1">Actualizar</button>
+                    </form>
+                </td>
+            </tr>
+                        }
+            </tbody>
+        </table>
+    }
+</div>

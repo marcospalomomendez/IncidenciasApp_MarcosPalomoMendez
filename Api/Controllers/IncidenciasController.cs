@@ -103,4 +103,47 @@ public class IncidenciasController : ControllerBase
         await _context.SaveChangesAsync();
         return Ok("Incidencia eliminada.");
     }
+    // GET: api/Incidencias/mis
+    [HttpGet("mis")]
+    public async Task<IActionResult> GetMias()
+    {
+        var usuarioId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+
+        var incidencias = await _context.Incidencias
+            .Include(i => i.UsuarioCreador)
+            .Include(i => i.TecnicoAsignado)
+            .Where(i => i.UsuarioCreadorId == usuarioId)
+            .OrderByDescending(i => i.FechaCreacion)
+            .ToListAsync();
+
+        return Ok(incidencias);
+    }
+    // PUT: api/Incidencias/{id}/asignar
+    [HttpPut("{id}/asignar")]
+    [Authorize(Roles = "Tecnico,Admin")]
+    public async Task<IActionResult> Asignar(int id)
+    {
+        var incidencia = await _context.Incidencias.FindAsync(id);
+        if (incidencia == null) return NotFound();
+
+        var usuarioId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+
+        // Registrar cambio en historial
+        var historial = new HistorialEstado
+        {
+            EstadoAnterior = incidencia.Estado,
+            EstadoNuevo = "EnProceso",
+            UsuarioId = usuarioId,
+            IncidenciaId = id
+        };
+
+        incidencia.TecnicoAsignadoId = usuarioId;
+        incidencia.Estado = "EnProceso";
+        incidencia.FechaActualizacion = DateTime.UtcNow;
+
+        _context.HistorialEstados.Add(historial);
+        await _context.SaveChangesAsync();
+
+        return Ok(incidencia);
+    }
 }

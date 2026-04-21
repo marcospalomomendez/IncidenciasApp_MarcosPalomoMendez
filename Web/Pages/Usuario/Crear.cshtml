@@ -1,0 +1,42 @@
+﻿@page
+@model Web.Pages.Usuario.CrearModel
+@{
+    ViewData["Title"] = "Nueva Incidencia";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Nueva Incidencia</h2>
+        <a href="/Usuario/Index" class="btn btn-secondary">← Volver</a>
+    </div>
+
+    @if (!string.IsNullOrEmpty(Model.Error))
+    {
+        <div class="alert alert-danger">@Model.Error</div>
+    }
+
+    <div class="card">
+        <div class="card-body">
+            <form method="post">
+                <div class="mb-3">
+                    <label class="form-label">Título</label>
+                    <input type="text" name="Titulo" class="form-control" required />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Descripción</label>
+                    <textarea name="Descripcion" class="form-control" rows="4" required></textarea>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Prioridad</label>
+                    <select name="Prioridad" class="form-select">
+                        <option value="Baja">Baja</option>
+                        <option value="Media" selected>Media</option>
+                        <option value="Alta">Alta</option>
+                        <option value="Critica">Crítica</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary">Crear Incidencia</button>
+            </form>
+        </div>
+    </div>
+</div>

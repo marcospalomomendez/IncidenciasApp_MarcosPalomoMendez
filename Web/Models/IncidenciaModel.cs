@@ -8,6 +8,7 @@
         public string Estado { get; set; } = string.Empty;
         public string Prioridad { get; set; } = string.Empty;
         public DateTime FechaCreacion { get; set; }
+        public DateTime? FechaActualizacion { get; set; }
         public int UsuarioCreadorId { get; set; }
         public int? TecnicoAsignadoId { get; set; }
     }

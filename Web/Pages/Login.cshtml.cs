@@ -40,6 +40,6 @@ public class LoginModel : PageModel
         HttpContext.Session.SetString("Rol", result.Rol);
         HttpContext.Session.SetString("Nombre", result.Nombre);
 
-        return RedirectToPage("/Incidencias/Index");
+        return RedirectToPage("/Index");
     }
 }

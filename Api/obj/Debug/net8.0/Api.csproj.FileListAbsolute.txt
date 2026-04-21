@@ -290,4 +290,3 @@ C:\Users\marco\source\repos\IncidenciasApp_MarcosPalomoMendez\Api\obj\Debug\net8
 C:\Users\marco\source\repos\IncidenciasApp_MarcosPalomoMendez\Api\obj\Debug\net8.0\Api.pdb
 C:\Users\marco\source\repos\IncidenciasApp_MarcosPalomoMendez\Api\obj\Debug\net8.0\Api.genruntimeconfig.cache
 C:\Users\marco\source\repos\IncidenciasApp_MarcosPalomoMendez\Api\obj\Debug\net8.0\ref\Api.dll
-C:\Users\marco\Source\Repos\IncidenciasApp_MarcosPalomoMendez\Api\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt

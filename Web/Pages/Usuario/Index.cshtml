@@ -1,0 +1,59 @@
+﻿@page
+@model Web.Pages.Usuario.IndexModel
+@{
+    ViewData["Title"] = "Mis Incidencias";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Mis Incidencias</h2>
+        <a href="/Usuario/Crear" class="btn btn-primary">+ Nueva Incidencia</a>
+    </div>
+
+    @if (!Model.Incidencias.Any())
+    {
+        <div class="alert alert-info">No tienes incidencias registradas.</div>
+    }
+    else
+    {
+        <table class="table table-bordered table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Título</th>
+                    <th>Estado</th>
+                    <th>Prioridad</th>
+                    <th>Fecha</th>
+                    <th>Detalle Incidencia</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var i in Model.Incidencias)
+                {
+                    <tr>
+                        <td>@i.Id</td>
+                        <td>@i.Titulo</td>
+                        <td>
+                            <span class="badge
+                                        @(i.Estado == "Abierta" ? "bg-success" :
+                                                                    i.Estado == "EnProceso" ? "bg-warning text-dark" :
+                                                                    i.Estado == "Resuelta" ? "bg-info" : "bg-secondary")">
+                                                                                                                      @i.Estado
+                                                                                                                  </span>
+                                                                                                              </td>
+                                                                                                              <td>
+                                                                                                                  <span class="badge
+                                        @(i.Prioridad == "Critica" ? "bg-danger" :
+                                                                    i.Prioridad == "Alta" ? "bg-warning text-dark" :
+                                                                    i.Prioridad == "Media" ? "bg-primary" : "bg-secondary")">
+                            @i.Prioridad
+                        </span>
+                    </td>
+                <td>@i.FechaCreacion.ToString("dd/MM/yyyy HH:mm")</td>
+                <td><a href="/Usuario/Detalle/@i.Id" class="btn btn-sm btn-outline-primary">Ver detalle</a></td>
+            </tr>
+                        }
+            </tbody>
+        </table>
+    }
+</div>

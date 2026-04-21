@@ -1,0 +1,136 @@
+﻿@page "{id:int}"
+@model Web.Pages.Admin.DetalleModel
+@{
+    ViewData["Title"] = "Detalle de Incidencia";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Incidencia #@Model.Incidencia?.Id</h2>
+        <a href="/Admin/Incidencias" class="btn btn-secondary">← Volver</a>
+    </div>
+
+    @if (Model.Incidencia == null)
+    {
+        <div class="alert alert-danger">Incidencia no encontrada.</div>
+    }
+    else
+    {
+        <div class="row">
+            <div class="col-md-8">
+                <div class="card mb-4">
+                    <div class="card-header bg-dark text-white">Información</div>
+                    <div class="card-body">
+                        <h5>@Model.Incidencia.Titulo</h5>
+                        <p class="text-muted">@Model.Incidencia.Descripcion</p>
+                        <div class="d-flex gap-2 mb-3">
+                            <span class="badge
+                                    @(Model.Incidencia.Estado == "Abierta" ? "bg-success" :
+                                                                    Model.Incidencia.Estado == "EnProceso" ? "bg-warning text-dark" :
+                                                                    Model.Incidencia.Estado == "Resuelta" ? "bg-info" : "bg-secondary")">
+                                                                                                                                     @Model.Incidencia.Estado
+                                                                                                                                 </span>
+                                                                                                                                 <span class="badge
+                                    @(Model.Incidencia.Prioridad == "Critica" ? "bg-danger" :
+                                                                    Model.Incidencia.Prioridad == "Alta" ? "bg-warning text-dark" :
+                                                                    Model.Incidencia.Prioridad == "Media" ? "bg-primary" : "bg-secondary")">
+                            @Model.Incidencia.Prioridad
+                        </span>
+                    </div>
+
+                        <form method="post" asp-page-handler="CambiarEstado" class="mb-3">
+                            <input type="hidden" name="id" value="@Model.Incidencia.Id" />
+                            <div class="d-flex gap-2">
+                                <select name="nuevoEstado" class="form-select form-select-sm w-auto">
+                                    <option value="Abierta" selected="@(Model.Incidencia.Estado == "Abierta")">Abierta</option>
+                                    <option value="EnProceso" selected="@(Model.Incidencia.Estado == "EnProceso")">En Proceso</option>
+                                    <option value="Resuelta" selected="@(Model.Incidencia.Estado == "Resuelta")">Resuelta</option>
+                                    <option value="Cerrada" selected="@(Model.Incidencia.Estado == "Cerrada")">Cerrada</option>
+                                </select>
+                                <button type="submit" class="btn btn-primary btn-sm">Cambiar estado</button>
+                            </div>
+                        </form>
+
+                        <form method="post" asp-page-handler="AsignarTecnico" class="mb-3">
+                            <input type="hidden" name="id" value="@Model.Incidencia.Id" />
+                            <div class="d-flex gap-2">
+                                <select name="tecnicoId" class="form-select form-select-sm w-auto">
+                                    <option value="">Sin asignar</option>
+                                @foreach (var t in Model.Tecnicos)
+                                    {
+                                        <option value="@t.Id" selected="@(Model.Incidencia.TecnicoAsignadoId == t.Id)">
+                                            @t.Nombre
+                                        </option>
+                                    }
+                                </select>
+                                <button type="submit" class="btn btn-warning btn-sm">Asignar técnico</button>
+                            </div>
+                        </form>
+
+                        <hr />
+                        <small class="text-muted">
+                            Creada: @Model.Incidencia.FechaCreacion.ToString("dd/MM/yyyy HH:mm")
+                            @if (Model.Incidencia.FechaActualizacion.HasValue)
+                            {
+                                <span> | Actualizada: @Model.Incidencia.FechaActualizacion.Value.ToString("dd/MM/yyyy HH:mm")</span>
+                            }
+                        </small>
+                    </div>
+                </div>
+
+                <div class="card mb-4">
+                    <div class="card-header bg-dark text-white">Comentarios (@Model.Incidencia.Comentarios.Count)</div>
+                    <div class="card-body">
+                        @if (!Model.Incidencia.Comentarios.Any())
+                        {
+                            <p class="text-muted">No hay comentarios aún.</p>
+                        }
+                        else
+                        {
+                            @foreach (var c in Model.Incidencia.Comentarios.OrderBy(x => x.FechaCreacion))
+                            {
+                                <div class="border rounded p-2 mb-2 bg-light">
+                                    <small class="text-muted">Usuario #@c.UsuarioId — @c.FechaCreacion.ToString("dd/MM/yyyy HH:mm")</small>
+                                    <p class="mb-0">@c.Contenido</p>
+                                </div>
+                            }
+                        }
+                        <hr />
+                        <form method="post" asp-page-handler="Comentar">
+                            <input type="hidden" name="incidenciaId" value="@Model.Incidencia.Id" />
+                            <div class="mb-2">
+                                <textarea name="contenido" class="form-control" rows="2" placeholder="Escribe un comentario..." required></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-sm">Añadir comentario</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header bg-dark text-white">Historial de estados</div>
+                    <div class="card-body">
+                        @if (!Model.Incidencia.Historial.Any())
+                        {
+                            <p class="text-muted">Sin cambios de estado.</p>
+                        }
+                        else
+                        {
+                            <ul class="list-unstyled">
+                                @foreach (var h in Model.Incidencia.Historial.OrderByDescending(x => x.FechaCambio))
+                                {
+                                    <li class="mb-2 border-bottom pb-2">
+                                        <small class="text-muted">@h.FechaCambio.ToString("dd/MM/yyyy HH:mm")</small><br />
+                                        <span class="badge bg-secondary">@h.EstadoAnterior</span>
+                                        → <span class="badge bg-primary">@h.EstadoNuevo</span>
+                                    </li>
+                                }
+                            </ul>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>

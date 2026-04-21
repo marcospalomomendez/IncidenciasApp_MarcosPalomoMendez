@@ -1,0 +1,87 @@
+﻿@page
+@model Web.Pages.Admin.IndexModel
+@{
+    ViewData["Title"] = "Panel Administrador";
+}
+
+<div class="container mt-4">
+    <h2 class="mb-4">Panel Administrador</h2>
+
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card text-white bg-primary">
+                <div class="card-body text-center">
+                    <h3>@Model.TotalIncidencias</h3>
+                    <p class="mb-0">Total Incidencias</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-success">
+                <div class="card-body text-center">
+                    <h3>@Model.Abiertas</h3>
+                    <p class="mb-0">Abiertas</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-warning">
+                <div class="card-body text-center">
+                    <h3>@Model.EnProceso</h3>
+                    <p class="mb-0">En Proceso</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-secondary">
+                <div class="card-body text-center">
+                    <h3>@Model.Cerradas</h3>
+                    <p class="mb-0">Cerradas</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-dark text-white">Incidencias por Prioridad</div>
+                <div class="card-body">
+                    <table class="table table-sm">
+                        <thead><tr><th>Prioridad</th><th>Total</th></tr></thead>
+                        <tbody>
+                            @foreach (var p in Model.PorPrioridad)
+                            {
+                                <tr>
+                                    <td>
+                                        <span class="badge
+                                                @(p.Key == "Critica" ? "bg-danger" :
+                                                                                            p.Key == "Alta" ? "bg-warning text-dark" :
+                                                                                            p.Key == "Media" ? "bg-primary" : "bg-secondary")">
+                                        @p.Key
+                                    </span>
+                                </td>
+                                <td>@p.Value</td>
+                            </tr>
+                                                        }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-dark text-white">Estadísticas</div>
+                <div class="card-body">
+                    <p><strong>Tiempo medio de resolución:</strong> @Model.TiempoMedioResolucion</p>
+                    <p><strong>Técnico con más incidencias pendientes:</strong> @Model.TecnicoMasCarga</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex gap-2">
+        <a href="/Admin/Usuarios" class="btn btn-dark">Gestionar Usuarios</a>
+        <a href="/Admin/Incidencias" class="btn btn-outline-dark">Ver Todas las Incidencias</a>
+    </div>
+</div>

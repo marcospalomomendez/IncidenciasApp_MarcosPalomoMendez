@@ -1,0 +1,73 @@
+﻿@page
+@model Web.Pages.Admin.IncidenciasModel
+@{
+    ViewData["Title"] = "Todas las Incidencias";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Todas las Incidencias</h2>
+        <a href="/Admin/Index" class="btn btn-secondary">← Volver</a>
+    </div>
+
+    @if (!string.IsNullOrEmpty(Model.Mensaje))
+    {
+        <div class="alert alert-success">@Model.Mensaje</div>
+    }
+
+    <table class="table table-bordered table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th>ID</th>
+                <th>Título</th>
+                <th>Estado</th>
+                <th>Prioridad</th>
+                <th>Técnico Asignado</th>
+                <th>Detalle Incidencia</th>
+                <th>Fecha</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var i in Model.Incidencias)
+            {
+                <tr>
+                    <td>@i.Id</td>
+                    <td>@i.Titulo</td>
+                    <td>
+                        <span class="badge
+                                @(i.Estado == "Abierta" ? "bg-success" :
+                                                            i.Estado == "EnProceso" ? "bg-warning text-dark" :
+                                                            i.Estado == "Resuelta" ? "bg-info" : "bg-secondary")">
+                                                                                                              @i.Estado
+                                                                                                          </span>
+                                                                                                      </td>
+                                                                                                      <td>
+                                                                                                          <span class="badge
+                                @(i.Prioridad == "Critica" ? "bg-danger" :
+                                                            i.Prioridad == "Alta" ? "bg-warning text-dark" :
+                                                            i.Prioridad == "Media" ? "bg-primary" : "bg-secondary")">
+                        @i.Prioridad
+                    </span>
+                </td>
+                <td>@(i.TecnicoAsignadoId.HasValue ? $"Técnico #{i.TecnicoAsignadoId}" : "Sin asignar")</td>
+                <td><a href="/Admin/Detalle/@i.Id" class="btn btn-sm btn-outline-primary">Ver detalle</a></td>
+                <td>@i.FechaCreacion.ToString("dd/MM/yyyy HH:mm")</td>
+                <td>
+                    <form method="post" class="d-flex gap-1">
+                        <input type="hidden" name="id" value="@i.Id" />
+                        <select name="nuevoEstado" class="form-select form-select-sm w-auto">
+                            <option value="Abierta" selected="@(i.Estado == "Abierta")">Abierta</option>
+                            <option value="EnProceso" selected="@(i.Estado == "EnProceso")">En Proceso</option>
+                            <option value="Resuelta" selected="@(i.Estado == "Resuelta")">Resuelta</option>
+                            <option value="Cerrada" selected="@(i.Estado == "Cerrada")">Cerrada</option>
+                        </select>
+                        <button type="submit" name="accion" value="estado" class="btn btn-sm btn-primary">Actualizar</button>
+                        <button type="submit" name="accion" value="eliminar" class="btn btn-sm btn-danger">Eliminar</button>
+                    </form>
+                </td>
+            </tr>
+                        }
+        </tbody>
+    </table>
+</div>

@@ -3,44 +3,24 @@
   "WorkspaceRootPath": "C:\\Users\\marco\\source\\repos\\IncidenciasApp_MarcosPalomoMendez\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{6635CE8D-0978-433C-A756-15549857F671}|Api\\Api.csproj|c:\\users\\marco\\source\\repos\\incidenciasapp_marcospalomomendez\\api\\controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{6635CE8D-0978-433C-A756-15549857F671}|Api\\Api.csproj|solutionrelative:api\\controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{522100ED-48C1-4B0A-851A-98868331F323}|Web\\Web.csproj|c:\\users\\marco\\source\\repos\\incidenciasapp_marcospalomomendez\\web\\pages\\admin\\detalle.cshtml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{522100ED-48C1-4B0A-851A-98868331F323}|Web\\Web.csproj|solutionrelative:web\\pages\\admin\\detalle.cshtml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{6635CE8D-0978-433C-A756-15549857F671}|Api\\Api.csproj|c:\\users\\marco\\source\\repos\\incidenciasapp_marcospalomomendez\\api\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{6635CE8D-0978-433C-A756-15549857F671}|Api\\Api.csproj|solutionrelative:api\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{522100ED-48C1-4B0A-851A-98868331F323}|Web\\Web.csproj|c:\\users\\marco\\source\\repos\\incidenciasapp_marcospalomomendez\\web\\pages\\admin\\detalle.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{522100ED-48C1-4B0A-851A-98868331F323}|Web\\Web.csproj|solutionrelative:web\\pages\\admin\\detalle.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{6635CE8D-0978-433C-A756-15549857F671}|Api\\Api.csproj|c:\\users\\marco\\source\\repos\\incidenciasapp_marcospalomomendez\\api\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
-      "RelativeMoniker": "D:0:0:{6635CE8D-0978-433C-A756-15549857F671}|Api\\Api.csproj|solutionrelative:api\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+      "AbsoluteMoniker": "D:0:0:{522100ED-48C1-4B0A-851A-98868331F323}|Web\\Web.csproj|c:\\users\\marco\\source\\repos\\incidenciasapp_marcospalomomendez\\web\\pages\\admin\\incidencias.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{522100ED-48C1-4B0A-851A-98868331F323}|Web\\Web.csproj|solutionrelative:web\\pages\\admin\\incidencias.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{6635CE8D-0978-433C-A756-15549857F671}|Api\\Api.csproj|c:\\users\\marco\\source\\repos\\incidenciasapp_marcospalomomendez\\api\\controllers\\usuarioscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{6635CE8D-0978-433C-A756-15549857F671}|Api\\Api.csproj|solutionrelative:api\\controllers\\usuarioscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{522100ED-48C1-4B0A-851A-98868331F323}|Web\\Web.csproj|c:\\users\\marco\\source\\repos\\incidenciasapp_marcospalomomendez\\web\\pages\\tecnico\\detalle.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{522100ED-48C1-4B0A-851A-98868331F323}|Web\\Web.csproj|solutionrelative:web\\pages\\tecnico\\detalle.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{6635CE8D-0978-433C-A756-15549857F671}|Api\\Api.csproj|c:\\users\\marco\\source\\repos\\incidenciasapp_marcospalomomendez\\api\\controllers\\incidenciascontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{6635CE8D-0978-433C-A756-15549857F671}|Api\\Api.csproj|solutionrelative:api\\controllers\\incidenciascontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{6635CE8D-0978-433C-A756-15549857F671}|Api\\Api.csproj|c:\\users\\marco\\source\\repos\\incidenciasapp_marcospalomomendez\\api\\controllers\\comentarioscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{6635CE8D-0978-433C-A756-15549857F671}|Api\\Api.csproj|solutionrelative:api\\controllers\\comentarioscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{6635CE8D-0978-433C-A756-15549857F671}|Api\\Api.csproj|c:\\users\\marco\\source\\repos\\incidenciasapp_marcospalomomendez\\api\\models\\incidencia.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{6635CE8D-0978-433C-A756-15549857F671}|Api\\Api.csproj|solutionrelative:api\\models\\incidencia.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{6635CE8D-0978-433C-A756-15549857F671}|Api\\Api.csproj|c:\\users\\marco\\source\\repos\\incidenciasapp_marcospalomomendez\\api\\models\\usuario.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{6635CE8D-0978-433C-A756-15549857F671}|Api\\Api.csproj|solutionrelative:api\\models\\usuario.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{522100ED-48C1-4B0A-851A-98868331F323}|Web\\Web.csproj|c:\\users\\marco\\source\\repos\\incidenciasapp_marcospalomomendez\\web\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
-      "RelativeMoniker": "D:0:0:{522100ED-48C1-4B0A-851A-98868331F323}|Web\\Web.csproj|solutionrelative:web\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{522100ED-48C1-4B0A-851A-98868331F323}|Web\\Web.csproj|c:\\users\\marco\\source\\repos\\incidenciasapp_marcospalomomendez\\web\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{522100ED-48C1-4B0A-851A-98868331F323}|Web\\Web.csproj|solutionrelative:web\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{522100ED-48C1-4B0A-851A-98868331F323}|Web\\Web.csproj|c:\\users\\marco\\source\\repos\\incidenciasapp_marcospalomomendez\\web\\pages\\tecnico\\detalle.cshtml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{522100ED-48C1-4B0A-851A-98868331F323}|Web\\Web.csproj|solutionrelative:web\\pages\\tecnico\\detalle.cshtml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -50,7 +30,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 6,
+          "SelectedChildIndex": 3,
           "Children": [
             {
               "$type": "Bookmark",
@@ -66,127 +46,68 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "appsettings.json",
-              "DocumentMoniker": "C:\\Users\\marco\\source\\repos\\IncidenciasApp_MarcosPalomoMendez\\Api\\appsettings.json",
-              "RelativeDocumentMoniker": "Api\\appsettings.json",
-              "ToolTip": "C:\\Users\\marco\\source\\repos\\IncidenciasApp_MarcosPalomoMendez\\Api\\appsettings.json",
-              "RelativeToolTip": "Api\\appsettings.json",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA4AAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2026-04-19T16:33:03.859Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "UsuariosController.cs",
-              "DocumentMoniker": "C:\\Users\\marco\\source\\repos\\IncidenciasApp_MarcosPalomoMendez\\Api\\Controllers\\UsuariosController.cs",
-              "RelativeDocumentMoniker": "Api\\Controllers\\UsuariosController.cs",
-              "ToolTip": "C:\\Users\\marco\\source\\repos\\IncidenciasApp_MarcosPalomoMendez\\Api\\Controllers\\UsuariosController.cs",
-              "RelativeToolTip": "Api\\Controllers\\UsuariosController.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAB4AAAABAAAAAAAAAA==",
+              "DocumentIndex": 0,
+              "Title": "Detalle.cshtml.cs",
+              "DocumentMoniker": "C:\\Users\\marco\\source\\repos\\IncidenciasApp_MarcosPalomoMendez\\Web\\Pages\\Admin\\Detalle.cshtml.cs",
+              "RelativeDocumentMoniker": "Web\\Pages\\Admin\\Detalle.cshtml.cs",
+              "ToolTip": "C:\\Users\\marco\\source\\repos\\IncidenciasApp_MarcosPalomoMendez\\Web\\Pages\\Admin\\Detalle.cshtml.cs",
+              "RelativeToolTip": "Web\\Pages\\Admin\\Detalle.cshtml.cs",
+              "ViewState": "AgIAAB0AAAAAAAAAAAAywD4AAAAvAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-07T17:07:32.921Z",
+              "WhenOpened": "2026-04-19T17:53:03.195Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 1,
-              "Title": "Program.cs",
-              "DocumentMoniker": "C:\\Users\\marco\\source\\repos\\IncidenciasApp_MarcosPalomoMendez\\Api\\Program.cs",
-              "RelativeDocumentMoniker": "Api\\Program.cs",
-              "ToolTip": "C:\\Users\\marco\\source\\repos\\IncidenciasApp_MarcosPalomoMendez\\Api\\Program.cs",
-              "RelativeToolTip": "Api\\Program.cs",
-              "ViewState": "AgIAABUAAAAAAAAAAAAAACwAAABSAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-07T17:01:36.223Z",
+              "Title": "Detalle.cshtml",
+              "DocumentMoniker": "C:\\Users\\marco\\source\\repos\\IncidenciasApp_MarcosPalomoMendez\\Web\\Pages\\Admin\\Detalle.cshtml",
+              "RelativeDocumentMoniker": "Web\\Pages\\Admin\\Detalle.cshtml",
+              "ToolTip": "C:\\Users\\marco\\source\\repos\\IncidenciasApp_MarcosPalomoMendez\\Web\\Pages\\Admin\\Detalle.cshtml",
+              "RelativeToolTip": "Web\\Pages\\Admin\\Detalle.cshtml",
+              "ViewState": "AgIAAE0AAAAAAAAAAAAUwIcAAAAGAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-04-19T17:52:57.801Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "AuthController.cs",
-              "DocumentMoniker": "C:\\Users\\marco\\source\\repos\\IncidenciasApp_MarcosPalomoMendez\\Api\\Controllers\\AuthController.cs",
-              "RelativeDocumentMoniker": "Api\\Controllers\\AuthController.cs",
-              "ToolTip": "C:\\Users\\marco\\source\\repos\\IncidenciasApp_MarcosPalomoMendez\\Api\\Controllers\\AuthController.cs",
-              "RelativeToolTip": "Api\\Controllers\\AuthController.cs",
-              "ViewState": "AgIAAD0AAAAAAAAAAAAcwGUAAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-07T16:37:19.194Z",
+              "DocumentIndex": 2,
+              "Title": "Incidencias.cshtml",
+              "DocumentMoniker": "C:\\Users\\marco\\source\\repos\\IncidenciasApp_MarcosPalomoMendez\\Web\\Pages\\Admin\\Incidencias.cshtml",
+              "RelativeDocumentMoniker": "Web\\Pages\\Admin\\Incidencias.cshtml",
+              "ToolTip": "C:\\Users\\marco\\source\\repos\\IncidenciasApp_MarcosPalomoMendez\\Web\\Pages\\Admin\\Incidencias.cshtml",
+              "RelativeToolTip": "Web\\Pages\\Admin\\Incidencias.cshtml",
+              "ViewState": "AgIAAA8AAAAAAAAAAAAAADUAAABBAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-04-19T17:52:15.827Z",
               "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 6,
-              "Title": "Incidencia.cs",
-              "DocumentMoniker": "C:\\Users\\marco\\source\\repos\\IncidenciasApp_MarcosPalomoMendez\\Api\\Models\\Incidencia.cs",
-              "RelativeDocumentMoniker": "Api\\Models\\Incidencia.cs",
-              "ToolTip": "C:\\Users\\marco\\source\\repos\\IncidenciasApp_MarcosPalomoMendez\\Api\\Models\\Incidencia.cs",
-              "RelativeToolTip": "Api\\Models\\Incidencia.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAA7AAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-07T17:03:39.831Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 7,
-              "Title": "Usuario.cs",
-              "DocumentMoniker": "C:\\Users\\marco\\source\\repos\\IncidenciasApp_MarcosPalomoMendez\\Api\\Models\\Usuario.cs",
-              "RelativeDocumentMoniker": "Api\\Models\\Usuario.cs",
-              "ToolTip": "C:\\Users\\marco\\source\\repos\\IncidenciasApp_MarcosPalomoMendez\\Api\\Models\\Usuario.cs",
-              "RelativeToolTip": "Api\\Models\\Usuario.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAAVAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-08T06:21:13.613Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 8,
-              "Title": "appsettings.json",
-              "DocumentMoniker": "C:\\Users\\marco\\source\\repos\\IncidenciasApp_MarcosPalomoMendez\\Web\\appsettings.json",
-              "RelativeDocumentMoniker": "Web\\appsettings.json",
-              "ToolTip": "C:\\Users\\marco\\source\\repos\\IncidenciasApp_MarcosPalomoMendez\\Web\\appsettings.json",
-              "RelativeToolTip": "Web\\appsettings.json",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2026-04-07T16:38:00.455Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 9,
-              "Title": "Program.cs",
-              "DocumentMoniker": "C:\\Users\\marco\\source\\repos\\IncidenciasApp_MarcosPalomoMendez\\Web\\Program.cs",
-              "RelativeDocumentMoniker": "Web\\Program.cs",
-              "ToolTip": "C:\\Users\\marco\\source\\repos\\IncidenciasApp_MarcosPalomoMendez\\Web\\Program.cs",
-              "RelativeToolTip": "Web\\Program.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAB0AAAAKAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-07T16:37:52.902Z"
             },
             {
               "$type": "Document",
               "DocumentIndex": 4,
-              "Title": "IncidenciasController.cs",
-              "DocumentMoniker": "C:\\Users\\marco\\source\\repos\\IncidenciasApp_MarcosPalomoMendez\\Api\\Controllers\\IncidenciasController.cs",
-              "RelativeDocumentMoniker": "Api\\Controllers\\IncidenciasController.cs",
-              "ToolTip": "C:\\Users\\marco\\source\\repos\\IncidenciasApp_MarcosPalomoMendez\\Api\\Controllers\\IncidenciasController.cs",
-              "RelativeToolTip": "Api\\Controllers\\IncidenciasController.cs",
-              "ViewState": "AgIAABsAAAAAAAAAAAAowB8AAAAgAAAAAAAAAA==",
+              "Title": "Detalle.cshtml.cs",
+              "DocumentMoniker": "C:\\Users\\marco\\source\\repos\\IncidenciasApp_MarcosPalomoMendez\\Web\\Pages\\Tecnico\\Detalle.cshtml.cs",
+              "RelativeDocumentMoniker": "Web\\Pages\\Tecnico\\Detalle.cshtml.cs",
+              "ToolTip": "C:\\Users\\marco\\source\\repos\\IncidenciasApp_MarcosPalomoMendez\\Web\\Pages\\Tecnico\\Detalle.cshtml.cs",
+              "RelativeToolTip": "Web\\Pages\\Tecnico\\Detalle.cshtml.cs",
+              "ViewState": "AgIAAA8AAAAAAAAAAAAUwEgAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-07T16:37:35.677Z"
+              "WhenOpened": "2026-04-19T17:51:33.85Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "ComentariosController.cs",
-              "DocumentMoniker": "C:\\Users\\marco\\source\\repos\\IncidenciasApp_MarcosPalomoMendez\\Api\\Controllers\\ComentariosController.cs",
-              "RelativeDocumentMoniker": "Api\\Controllers\\ComentariosController.cs",
-              "ToolTip": "C:\\Users\\marco\\source\\repos\\IncidenciasApp_MarcosPalomoMendez\\Api\\Controllers\\ComentariosController.cs",
-              "RelativeToolTip": "Api\\Controllers\\ComentariosController.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAEIAAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-07T16:37:28Z"
+              "DocumentIndex": 3,
+              "Title": "Detalle.cshtml",
+              "DocumentMoniker": "C:\\Users\\marco\\source\\repos\\IncidenciasApp_MarcosPalomoMendez\\Web\\Pages\\Tecnico\\Detalle.cshtml",
+              "RelativeDocumentMoniker": "Web\\Pages\\Tecnico\\Detalle.cshtml",
+              "ToolTip": "C:\\Users\\marco\\source\\repos\\IncidenciasApp_MarcosPalomoMendez\\Web\\Pages\\Tecnico\\Detalle.cshtml",
+              "RelativeToolTip": "Web\\Pages\\Tecnico\\Detalle.cshtml",
+              "ViewState": "AgIAAFIAAAAAAAAAAAAIwIAAAAAGAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-04-19T17:51:30.161Z",
+              "EditorCaption": ""
             }
           ]
         }
