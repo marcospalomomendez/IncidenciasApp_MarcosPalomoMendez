@@ -1,0 +1,33 @@
+﻿<Page x:Class="Desktop.Views.LoginPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      Title="Login" Background="#F0F0F0">
+    <Grid>
+        <Border Width="350" VerticalAlignment="Center" HorizontalAlignment="Center"
+                Background="White" CornerRadius="8" Padding="30">
+            <Border.Effect>
+                <DropShadowEffect BlurRadius="10" Opacity="0.2"/>
+            </Border.Effect>
+            <StackPanel>
+                <TextBlock Text="🛠 Gestión de Incidencias" FontSize="18" FontWeight="Bold"
+                           Foreground="#1F3864" HorizontalAlignment="Center" Margin="0,0,0,20"/>
+
+                <TextBlock Text="Email" FontWeight="SemiBold" Margin="0,0,0,4"/>
+                <TextBox x:Name="TxtEmail" Height="35" Padding="8" FontSize="14"
+                         BorderBrush="#CCCCCC" BorderThickness="1"/>
+
+                <TextBlock Text="Contraseña" FontWeight="SemiBold" Margin="0,12,0,4"/>
+                <PasswordBox x:Name="TxtPassword" Height="35" Padding="8" FontSize="14"
+                             BorderBrush="#CCCCCC" BorderThickness="1"/>
+
+                <TextBlock x:Name="TxtError" Foreground="Red" FontSize="12"
+                           Margin="0,8,0,0" Visibility="Collapsed"/>
+
+                <Button x:Name="BtnLogin" Content="Iniciar sesión" Height="40"
+                        Margin="0,16,0,0" Background="#1F3864" Foreground="White"
+                        FontSize="14" FontWeight="Bold" BorderThickness="0"
+                        Cursor="Hand" Click="BtnLogin_Click"/>
+            </StackPanel>
+        </Border>
+    </Grid>
+</Page>

@@ -1,0 +1,64 @@
+﻿<Page x:Class="Desktop.Views.IncidenciasPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      Title="Incidencias" Background="#F0F0F0">
+    <Grid Height="394" Width="813">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="60"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <Border Grid.Row="0" Background="#1F3864" Padding="20,0">
+            <Grid>
+                <TextBlock Text="🛠 Gestión de Incidencias" Foreground="White"
+                           FontSize="18" FontWeight="Bold" VerticalAlignment="Center"/>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right"
+                            VerticalAlignment="Center">
+                    <TextBlock x:Name="TxtNombre" Foreground="White" FontSize="13"
+                               VerticalAlignment="Center" Margin="0,0,16,0"/>
+                    <Button Content="Cerrar sesión" Background="#C55A11" Foreground="White"
+                            BorderThickness="0" Padding="10,5" Cursor="Hand"
+                            Click="BtnLogout_Click"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Contenido -->
+        <Grid Grid.Row="1" Margin="20">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="40"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <StackPanel Grid.Row="0" Orientation="Horizontal">
+                <TextBlock Text="Filtrar por estado:" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                <ComboBox x:Name="CmbFiltro" Width="150" SelectionChanged="CmbFiltro_SelectionChanged">
+                    <ComboBoxItem Content="Todos" IsSelected="True"/>
+                    <ComboBoxItem Content="Abierta"/>
+                    <ComboBoxItem Content="EnProceso"/>
+                    <ComboBoxItem Content="Resuelta"/>
+                    <ComboBoxItem Content="Cerrada"/>
+                </ComboBox>
+                <Button Content="🔄 Actualizar" Margin="10,0,0,0" Padding="10,5"
+                        Background="#1F3864" Foreground="White" BorderThickness="0"
+                        Cursor="Hand" Click="BtnRefresh_Click"/>
+            </StackPanel>
+
+            <DataGrid Grid.Row="1" x:Name="DgIncidencias" Margin="0,10,0,0"
+                      AutoGenerateColumns="False" IsReadOnly="True"
+                      SelectionMode="Single" GridLinesVisibility="Horizontal"
+                      RowBackground="White" AlternatingRowBackground="#F5F5F5"
+                      MouseDoubleClick="DgIncidencias_MouseDoubleClick">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="50"/>
+                    <DataGridTextColumn Header="Título" Binding="{Binding Titulo}" Width="*"/>
+                    <DataGridTextColumn Header="Estado" Binding="{Binding Estado}" Width="100"/>
+                    <DataGridTextColumn Header="Prioridad" Binding="{Binding Prioridad}" Width="100"/>
+                    <DataGridTextColumn Header="Técnico" Binding="{Binding TecnicoAsignadoId}" Width="80"/>
+                    <DataGridTextColumn Header="Fecha" Binding="{Binding FechaCreacion, StringFormat=dd/MM/yyyy HH:mm}" Width="130"/>
+                </DataGrid.Columns>
+            </DataGrid>
+        </Grid>
+    </Grid>
+</Page>
