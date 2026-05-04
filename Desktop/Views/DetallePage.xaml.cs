@@ -32,42 +32,95 @@ public partial class DetallePage : Page
             var json = await response.Content.ReadAsStringAsync();
             var inc = JsonSerializer.Deserialize<JsonElement>(json);
 
-            TxtTitulo.Text = inc.GetProperty("titulo").GetString();
-            TxtDescripcion.Text = inc.GetProperty("descripcion").GetString();
-            TxtEstado.Text = inc.GetProperty("estado").GetString();
-            TxtPrioridad.Text = inc.GetProperty("prioridad").GetString();
-
+            var titulo = inc.GetProperty("titulo").GetString();
+            var descripcion = inc.GetProperty("descripcion").GetString();
+            var estado = inc.GetProperty("estado").GetString();
+            var prioridad = inc.GetProperty("prioridad").GetString();
             var tecnicoId = inc.GetProperty("tecnicoAsignadoId");
-            TxtTecnico.Text = tecnicoId.ValueKind == JsonValueKind.Null
+            var tecnicoTexto = tecnicoId.ValueKind == JsonValueKind.Null
                 ? "Sin asignar" : $"Técnico #{tecnicoId.GetInt32()}";
 
-            BtnAsignar.IsEnabled = tecnicoId.ValueKind == JsonValueKind.Null;
+            var comentarios = JsonSerializer.Deserialize<List<ComentarioItem>>(
+                inc.GetProperty("comentarios").GetRawText(),
+                new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
 
-            // Seleccionar estado actual en ComboBox
-            foreach (ComboBoxItem item in CmbEstado.Items)
+            var historial = JsonSerializer.Deserialize<List<HistorialItem>>(
+                inc.GetProperty("historial").GetRawText(),
+                new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+            Dispatcher.Invoke(() =>
             {
-                if (item.Content.ToString() == TxtEstado.Text)
+                TxtTitulo.Text = titulo;
+                TxtDescripcion.Text = descripcion;
+                TxtEstado.Text = estado;
+                TxtPrioridad.Text = prioridad;
+                TxtTecnico.Text = tecnicoTexto;
+
+                if (MainWindow.Rol == "Admin")
                 {
-                    CmbEstado.SelectedItem = item;
-                    break;
+                    BtnAsignar.Visibility = Visibility.Collapsed;
+                    TxtLabelTecnicos.Visibility = Visibility.Visible;
+                    CmbTecnicos.Visibility = Visibility.Visible;
+                    BtnAsignarTecnico.Visibility = Visibility.Visible;
                 }
-            }
+                else
+                {
+                    BtnAsignar.IsEnabled = tecnicoId.ValueKind == JsonValueKind.Null;
+                    TxtLabelTecnicos.Visibility = Visibility.Collapsed;
+                    CmbTecnicos.Visibility = Visibility.Collapsed;
+                    BtnAsignarTecnico.Visibility = Visibility.Collapsed;
+                }
 
-            // Comentarios
-            var comentarios = inc.GetProperty("comentarios");
-            LstComentarios.ItemsSource = JsonSerializer.Deserialize<List<ComentarioItem>>(
-                comentarios.GetRawText(),
-                new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                foreach (ComboBoxItem item in CmbEstado.Items)
+                {
+                    if (item.Content.ToString() == estado)
+                    {
+                        CmbEstado.SelectedItem = item;
+                        break;
+                    }
+                }
 
-            // Historial
-            var historial = inc.GetProperty("historial");
-            LstHistorial.ItemsSource = JsonSerializer.Deserialize<List<HistorialItem>>(
-                historial.GetRawText(),
-                new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                LstComentarios.ItemsSource = comentarios;
+                LstHistorial.ItemsSource = historial;
+            });
+
+            if (MainWindow.Rol == "Admin")
+                await CargarTecnicos();
         }
         catch (Exception ex)
         {
             MessageBox.Show($"Error al cargar el detalle: {ex.Message}");
+        }
+    }
+    private async Task CargarTecnicos()
+    {
+        try
+        {
+            await Task.Delay(100);
+            var response = await _client.GetAsync("/api/Usuarios");
+            if (response.IsSuccessStatusCode)
+            {
+                var json = await response.Content.ReadAsStringAsync();
+                var todos = JsonSerializer.Deserialize<List<TecnicoItem>>(json,
+                    new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? new();
+                var tecnicos = todos.Where(u => u.Rol == "Tecnico").ToList();
+
+                MessageBox.Show($"Técnicos encontrados: {tecnicos.Count}");
+
+                Dispatcher.Invoke(() =>
+                {
+                    CmbTecnicos.ItemsSource = tecnicos;
+                    CmbTecnicos.DisplayMemberPath = "Nombre";
+                });
+            }
+            else
+            {
+                MessageBox.Show($"Error al cargar usuarios: {response.StatusCode}");
+            }
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Excepción: {ex.Message}");
         }
     }
 
@@ -98,6 +151,32 @@ public partial class DetallePage : Page
         }
     }
 
+    private async void BtnAsignarTecnico_Click(object sender, RoutedEventArgs e)
+    {
+        if (CmbTecnicos.SelectedItem is not TecnicoItem tecnico)
+        {
+            MessageBox.Show("Selecciona un técnico.");
+            return;
+        }
+
+        var estadoActual = (CmbEstado.SelectedItem as ComboBoxItem)?.Content?.ToString();
+
+        var body = new StringContent(
+            JsonSerializer.Serialize(new
+            {
+                tecnicoAsignadoId = tecnico.Id,
+                estado = estadoActual
+            }),
+            Encoding.UTF8, "application/json");
+
+        var response = await _client.PutAsync($"/api/Incidencias/{_incidenciaId}", body);
+        if (response.IsSuccessStatusCode)
+        {
+            MessageBox.Show($"Incidencia asignada a {tecnico.Nombre}.");
+            await CargarDetalle();
+        }
+    }
+
     private async void BtnComentario_Click(object sender, RoutedEventArgs e)
     {
         var contenido = TxtComentario.Text.Trim();
@@ -120,6 +199,13 @@ public partial class DetallePage : Page
         var window = (MainWindow)Application.Current.MainWindow;
         window.MainFrame.Navigate(new IncidenciasPage());
     }
+}
+
+public class TecnicoItem
+{
+    public int Id { get; set; }
+    public string Nombre { get; set; } = string.Empty;
+    public string Rol { get; set; } = string.Empty;
 }
 
 public class ComentarioItem

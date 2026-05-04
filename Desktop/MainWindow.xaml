@@ -1,9 +1,12 @@
 ﻿<Window x:Class="Desktop.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Gestión de Incidencias" Height="600" Width="900"
-        WindowStartupLocation="CenterScreen">
+        Title="Gestión de Incidencias"
+        WindowStartupLocation="CenterScreen"
+        WindowState="Maximized"
+        Background="#F0F0F0">
     <Grid>
-        <Frame x:Name="MainFrame" NavigationUIVisibility="Hidden"/>
+        <Frame x:Name="MainFrame" NavigationUIVisibility="Hidden"
+               BorderThickness="0" Padding="0"/>
     </Grid>
 </Window>

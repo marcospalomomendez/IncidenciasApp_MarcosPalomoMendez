@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Net.Http.Headers;
 using System.Text;
@@ -54,13 +54,25 @@ public class DetalleModel : PageModel
 
         return Page();
     }
-
     public async Task<IActionResult> OnPostCambiarEstadoAsync(int id, string nuevoEstado)
     {
         var client = GetClient();
+
+        // Primero obtener la incidencia para no perder el técnico
+        var resInc = await client.GetAsync($"/api/Incidencias/{id}");
+        int? tecnicoActual = null;
+        if (resInc.IsSuccessStatusCode)
+        {
+            var incJson = await resInc.Content.ReadAsStringAsync();
+            var inc = JsonSerializer.Deserialize<IncidenciaDetalleModel>(incJson,
+                new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            tecnicoActual = inc?.TecnicoAsignadoId;
+        }
+
         var body = new StringContent(
-            JsonSerializer.Serialize(new { estado = nuevoEstado }),
+            JsonSerializer.Serialize(new { estado = nuevoEstado, tecnicoAsignadoId = tecnicoActual }),
             Encoding.UTF8, "application/json");
+
         await client.PutAsync($"/api/Incidencias/{id}", body);
         return RedirectToPage(new { id });
     }
@@ -71,7 +83,11 @@ public class DetalleModel : PageModel
         var body = new StringContent(
             JsonSerializer.Serialize(new { tecnicoAsignadoId = tecnicoId }),
             Encoding.UTF8, "application/json");
-        await client.PutAsync($"/api/Incidencias/{id}", body);
+
+        var response = await client.PutAsync($"/api/Incidencias/{id}", body);
+        var responseBody = await response.Content.ReadAsStringAsync();
+        Console.WriteLine($"AsignarTecnico → {response.StatusCode}: {responseBody}");
+
         return RedirectToPage(new { id });
     }
 

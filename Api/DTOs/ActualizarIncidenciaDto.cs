@@ -2,7 +2,7 @@
 {
     public class ActualizarIncidenciaDto
     {
-        public string Estado { get; set; } = string.Empty;
+        public string? Estado { get; set; }
         public int? TecnicoAsignadoId { get; set; }
     }
 }

@@ -42,7 +42,37 @@ public class IncidenciasController : ControllerBase
             .FirstOrDefaultAsync(i => i.Id == id);
 
         if (incidencia == null) return NotFound();
-        return Ok(incidencia);
+
+        // Devolvemos un DTO plano para evitar referencias circulares
+        return Ok(new
+        {
+            incidencia.Id,
+            incidencia.Titulo,
+            incidencia.Descripcion,
+            incidencia.Estado,
+            incidencia.Prioridad,
+            incidencia.FechaCreacion,
+            incidencia.FechaActualizacion,
+            incidencia.UsuarioCreadorId,
+            incidencia.TecnicoAsignadoId,
+            Comentarios = incidencia.Comentarios.Select(c => new
+            {
+                c.Id,
+                c.Contenido,
+                c.FechaCreacion,
+                c.UsuarioId,
+                c.IncidenciaId
+            }),
+            Historial = incidencia.Historial.Select(h => new
+            {
+                h.Id,
+                h.EstadoAnterior,
+                h.EstadoNuevo,
+                h.FechaCambio,
+                h.UsuarioId,
+                h.IncidenciaId
+            })
+        });
     }
     // POST: api/Incidencias
     [HttpPost]
@@ -69,24 +99,29 @@ public class IncidenciasController : ControllerBase
     public async Task<IActionResult> Actualizar(int id, [FromBody] ActualizarIncidenciaDto dto)
     {
         var incidencia = await _context.Incidencias.FindAsync(id);
-        // Si la incidencia no existe, devuelve un error 404 Not Found
         if (incidencia == null) return NotFound();
-        // Obtiene el ID del usuario autenticado desde el token JWT
+
         var usuarioId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
-        // Crea un nuevo registro de historial de estado con el estado anterior, el nuevo estado, el ID del usuario que hizo el cambio y el ID de la incidencia
-        var historial = new HistorialEstado
+
+        // Solo registrar historial si el estado cambia
+        if (!string.IsNullOrEmpty(dto.Estado) && dto.Estado != incidencia.Estado)
         {
-            EstadoAnterior = incidencia.Estado,
-            EstadoNuevo = dto.Estado,
-            UsuarioId = usuarioId,
-            IncidenciaId = id
-        };
-        // Actualiza el estado y el técnico asignado de la incidencia, y establece la fecha de actualización
-        incidencia.Estado = dto.Estado;
-        incidencia.TecnicoAsignadoId = dto.TecnicoAsignadoId;
-        incidencia.FechaActualizacion = DateTime.Now;
-        // Agrega el nuevo registro de historial a la base de datos y guarda los cambios
-        _context.HistorialEstados.Add(historial);
+            var historial = new HistorialEstado
+            {
+                EstadoAnterior = incidencia.Estado,
+                EstadoNuevo = dto.Estado,
+                UsuarioId = usuarioId,
+                IncidenciaId = id
+            };
+            incidencia.Estado = dto.Estado;
+            _context.HistorialEstados.Add(historial);
+        }
+
+        // Actualizar técnico SOLO si viene en el DTO (no null)
+        if (dto.TecnicoAsignadoId.HasValue)
+            incidencia.TecnicoAsignadoId = dto.TecnicoAsignadoId.Value;
+
+        incidencia.FechaActualizacion = DateTime.UtcNow;
         await _context.SaveChangesAsync();
         return Ok(incidencia);
     }

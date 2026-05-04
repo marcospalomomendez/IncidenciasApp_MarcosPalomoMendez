@@ -15,6 +15,44 @@
         <div class="alert alert-success">@Model.Mensaje</div>
     }
 
+    @if (!string.IsNullOrEmpty(Model.Error))
+    {
+        <div class="alert alert-danger">@Model.Error</div>
+    }
+
+    <!-- Formulario crear usuario -->
+    <div class="card mb-4">
+        <div class="card-header bg-dark text-white">Crear nuevo usuario</div>
+        <div class="card-body">
+            <form method="post" asp-page-handler="Crear" class="row g-3">
+                <div class="col-md-3">
+                    <label class="form-label">Nombre</label>
+                    <input type="text" name="nombre" class="form-control" required />
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Email</label>
+                    <input type="email" name="email" class="form-control" required />
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Contraseña</label>
+                    <input type="password" name="password" class="form-control" required />
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Rol</label>
+                    <select name="rol" class="form-select">
+                        <option value="Usuario">Usuario</option>
+                        <option value="Tecnico">Técnico</option>
+                        <option value="Admin">Admin</option>
+                    </select>
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <button type="submit" class="btn btn-success w-100">Crear</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Tabla usuarios -->
     <table class="table table-bordered table-hover">
         <thead class="table-dark">
             <tr>
@@ -40,7 +78,7 @@
                     </span>
                 </td>
                 <td>
-                    <form method="post" class="d-flex gap-2">
+                    <form method="post" asp-page-handler="CambiarRol" class="d-flex gap-2">
                         <input type="hidden" name="id" value="@u.Id" />
                         <select name="nuevoRol" class="form-select form-select-sm w-auto">
                             <option value="Usuario" selected="@(u.Rol == "Usuario")">Usuario</option>
