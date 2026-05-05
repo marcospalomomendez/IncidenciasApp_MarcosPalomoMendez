@@ -10,7 +10,7 @@
             </Border.Effect>
             <StackPanel>
                 <TextBlock Text="Gestión de Incidencias" FontSize="18" FontWeight="Bold"
-                           Foreground="#1F3864" HorizontalAlignment="Center" Margin="0,0,0,20"/>
+                           Foreground="#212529" HorizontalAlignment="Center" Margin="0,0,0,20"/>
                 <TextBlock Text="Email" FontWeight="SemiBold" Margin="0,0,0,4"/>
                 <TextBox x:Name="TxtEmail" Height="35" Padding="8" FontSize="14"
                          BorderBrush="#CCCCCC" BorderThickness="1"/>
@@ -19,8 +19,8 @@
                              BorderBrush="#CCCCCC" BorderThickness="1"/>
                 <TextBlock x:Name="TxtError" Foreground="Red" FontSize="12"
                            Margin="0,8,0,0" Visibility="Collapsed"/>
-                <Button x:Name="BtnLogin" Content="Iniciar sesión" Height="40"
-                        Margin="0,16,0,0" Background="#1F3864" Foreground="White"
+                <Button x:Name="BtnLogin" Content="Entrar" Height="40"
+                        Margin="0,16,0,0" Background="#0D6EFD" Foreground="White"
                         FontSize="14" FontWeight="Bold" BorderThickness="0"
                         Cursor="Hand" Click="BtnLogin_Click"/>
             </StackPanel>
