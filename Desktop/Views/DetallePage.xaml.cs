@@ -4,7 +4,7 @@ using System.Text;
 using System.Text.Json;
 using System.Windows;
 using System.Windows.Controls;
-
+using System.Windows.Media;
 namespace Desktop.Views;
 
 public partial class DetallePage : Page
@@ -55,6 +55,30 @@ public partial class DetallePage : Page
                 TxtEstado.Text = estado;
                 TxtPrioridad.Text = prioridad;
                 TxtTecnico.Text = tecnicoTexto;
+                // Color del badge de estado
+                BadgeEstado.Background = estado switch
+                {
+                    "Abierta" => new SolidColorBrush(Color.FromRgb(25, 135, 84)),
+                    "EnProceso" => new SolidColorBrush(Color.FromRgb(255, 193, 7)),
+                    "Resuelta" => new SolidColorBrush(Color.FromRgb(13, 110, 253)),
+                    "Cerrada" => new SolidColorBrush(Color.FromRgb(108, 117, 125)),
+                    _ => new SolidColorBrush(Color.FromRgb(108, 117, 125))
+                };
+                TxtEstado.Foreground = estado == "EnProceso"
+                    ? new SolidColorBrush(Colors.Black)
+                    : new SolidColorBrush(Colors.White);
+
+                // Color del badge de prioridad
+                BadgePrioridad.Background = prioridad switch
+                {
+                    "Critica" => new SolidColorBrush(Color.FromRgb(220, 53, 69)),
+                    "Alta" => new SolidColorBrush(Color.FromRgb(255, 193, 7)),
+                    "Media" => new SolidColorBrush(Color.FromRgb(13, 110, 253)),
+                    _ => new SolidColorBrush(Color.FromRgb(108, 117, 125))
+                };
+                TxtPrioridad.Foreground = prioridad == "Alta"
+                    ? new SolidColorBrush(Colors.Black)
+                    : new SolidColorBrush(Colors.White);
 
                 if (MainWindow.Rol == "Admin")
                 {
@@ -105,7 +129,7 @@ public partial class DetallePage : Page
                     new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? new();
                 var tecnicos = todos.Where(u => u.Rol == "Tecnico").ToList();
 
-                MessageBox.Show($"Técnicos encontrados: {tecnicos.Count}");
+                //MessageBox.Show($"Técnicos encontrados: {tecnicos.Count}");
 
                 Dispatcher.Invoke(() =>
                 {
