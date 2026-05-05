@@ -8,7 +8,6 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <!-- Header igual que la web -->
         <Border Grid.Row="0" Background="#212529" Padding="20,0">
             <Grid>
                 <TextBlock Text="Gestión de Incidencias" Foreground="White"

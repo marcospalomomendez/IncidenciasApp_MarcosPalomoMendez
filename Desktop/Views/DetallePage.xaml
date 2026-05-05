@@ -8,8 +8,7 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-
-        <!-- Header igual que IncidenciasPage -->
+        
         <Border Grid.Row="0" Background="#212529" Padding="20,0">
             <Grid>
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
