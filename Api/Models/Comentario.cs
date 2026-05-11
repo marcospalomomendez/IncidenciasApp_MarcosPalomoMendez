@@ -4,7 +4,7 @@ public class Comentario
 {
     public int Id { get; set; }
     public string Contenido { get; set; } = string.Empty;
-    public DateTime FechaCreacion { get; set; } = DateTime.Now;
+    public DateTime FechaCreacion { get; set; } = DateTime.UtcNow;
     public int UsuarioId { get; set; }
     public Usuario Usuario { get; set; } = null!;
     public int IncidenciaId { get; set; }

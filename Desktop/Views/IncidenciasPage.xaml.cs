@@ -66,10 +66,11 @@ public partial class IncidenciasPage : Page
     {
         await CargarIncidencias();
     }
-
     private void BtnLogout_Click(object sender, RoutedEventArgs e)
     {
         MainWindow.Token = string.Empty;
+        MainWindow.Rol = string.Empty;
+        MainWindow.Nombre = string.Empty;
         var window = (MainWindow)Application.Current.MainWindow;
         window.MainFrame.Navigate(new LoginPage());
     }

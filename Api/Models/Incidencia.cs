@@ -7,7 +7,7 @@ public class Incidencia
     public string Descripcion { get; set; } = string.Empty;
     public string Estado { get; set; } = "Abierta"; // Abierta, EnProceso, Resuelta, Cerrada
     public string Prioridad { get; set; } = "Media"; // Baja, Media, Alta, Critica
-    public DateTime FechaCreacion { get; set; } = DateTime.Now;
+    public DateTime FechaCreacion { get; set; } = DateTime.UtcNow;
     public DateTime? FechaActualizacion { get; set; }
     public int UsuarioCreadorId { get; set; }
     public Usuario UsuarioCreador { get; set; } = null!;

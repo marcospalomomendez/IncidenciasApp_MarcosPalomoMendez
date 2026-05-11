@@ -85,9 +85,6 @@ public class DetalleModel : PageModel
             Encoding.UTF8, "application/json");
 
         var response = await client.PutAsync($"/api/Incidencias/{id}", body);
-        var responseBody = await response.Content.ReadAsStringAsync();
-        Console.WriteLine($"AsignarTecnico → {response.StatusCode}: {responseBody}");
-
         return RedirectToPage(new { id });
     }
 
