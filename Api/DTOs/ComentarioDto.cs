@@ -1,8 +1,13 @@
-﻿namespace Api.DTOs
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Api.DTOs;
+
+public class ComentarioDto
 {
-    public class ComentarioDto
-    {
-        public string Contenido { get; set; } = string.Empty;
-        public int IncidenciaId { get; set; }
-    }
+    [Required(ErrorMessage = "El contenido es obligatorio.")]
+    [StringLength(1000, MinimumLength = 1, ErrorMessage = "El comentario no puede estar vacío.")]
+    public string Contenido { get; set; } = string.Empty;
+
+    [Required]
+    public int IncidenciaId { get; set; }
 }

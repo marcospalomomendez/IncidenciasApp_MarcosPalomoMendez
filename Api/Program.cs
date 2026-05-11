@@ -57,6 +57,16 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!))
         };
     });
+// CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("WebClient", policy =>
+    {
+        policy.WithOrigins("http://localhost:5077", "https://localhost:7084")
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
 
 builder.Services.AddAuthorization();
 
@@ -69,6 +79,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseCors("WebClient");
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();

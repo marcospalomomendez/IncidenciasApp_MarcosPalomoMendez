@@ -3,6 +3,7 @@ using Api.DTOs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Shared;
 
 namespace Api.Controllers;
 
@@ -35,8 +36,9 @@ public class UsuariosController : ControllerBase
         var usuario = await _context.Usuarios.FindAsync(id);
         if (usuario == null) return NotFound();
 
-        if (dto.Rol != "Usuario" && dto.Rol != "Tecnico" && dto.Rol != "Admin")
+        if (dto.Rol != Roles.Usuario && dto.Rol != Roles.Tecnico && dto.Rol != Roles.Admin) {
             return BadRequest("Rol no válido.");
+        } 
 
         usuario.Rol = dto.Rol;
         await _context.SaveChangesAsync();

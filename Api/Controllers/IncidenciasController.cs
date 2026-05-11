@@ -4,6 +4,7 @@ using Api.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Shared;
 using System.Security.Claims;
 
 namespace Api.Controllers;
@@ -167,13 +168,13 @@ public class IncidenciasController : ControllerBase
         var historial = new HistorialEstado
         {
             EstadoAnterior = incidencia.Estado,
-            EstadoNuevo = "EnProceso",
+            EstadoNuevo = Estados.EnProceso,
             UsuarioId = usuarioId,
             IncidenciaId = id
         };
 
         incidencia.TecnicoAsignadoId = usuarioId;
-        incidencia.Estado = "EnProceso";
+        incidencia.Estado = Estados.EnProceso;
         incidencia.FechaActualizacion = DateTime.UtcNow;
 
         _context.HistorialEstados.Add(historial);

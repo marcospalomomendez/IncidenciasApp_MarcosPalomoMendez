@@ -1,9 +1,10 @@
 ﻿using Api.Data;
-using Api.Models;
 using Api.DTOs;
+using Api.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Shared;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -37,7 +38,7 @@ public class AuthController : ControllerBase
             Nombre = dto.Nombre,
             Email = dto.Email,
             PasswordHash = HashPassword(dto.Password),
-            Rol = "Usuario"
+            Rol = Roles.Usuario
         };
 
         // Guardar el usuario en la base de datos
