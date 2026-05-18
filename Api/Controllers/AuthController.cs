@@ -61,7 +61,7 @@ public class AuthController : ControllerBase
 
         // Generar el token JWT
         var token = GenerarToken(usuario);
-        return Ok(new { token, rol = usuario.Rol, nombre = usuario.Nombre });
+        return Ok(new { token, rol = usuario.Rol, nombre = usuario.Nombre, id = usuario.Id });
     }
 
     // Métodos auxiliares para hashing de contraseñas y generación de tokens

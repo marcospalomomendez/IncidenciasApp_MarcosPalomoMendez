@@ -1,5 +1,4 @@
 ﻿using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 using System.Windows;
@@ -9,16 +8,14 @@ namespace Desktop.Views;
 
 public partial class DetallePage : Page
 {
-    private readonly HttpClient _client;
+    private static readonly JsonSerializerOptions JsonOpts = new() { PropertyNameCaseInsensitive = true };
+
     private readonly int _incidenciaId;
 
     public DetallePage(int id)
     {
         InitializeComponent();
         _incidenciaId = id;
-        _client = new HttpClient { BaseAddress = new Uri(App.ApiUrl) };
-        _client.DefaultRequestHeaders.Authorization =
-            new AuthenticationHeaderValue("Bearer", MainWindow.Token);
         Loaded += async (s, e) => await CargarDetalle();
     }
 
@@ -26,7 +23,7 @@ public partial class DetallePage : Page
     {
         try
         {
-            var response = await _client.GetAsync($"/api/Incidencias/{_incidenciaId}");
+            var response = await MainWindow.ApiClient.GetAsync($"/api/Incidencias/{_incidenciaId}");
             if (!response.IsSuccessStatusCode) return;
 
             var json = await response.Content.ReadAsStringAsync();
@@ -42,11 +39,11 @@ public partial class DetallePage : Page
 
             var comentarios = JsonSerializer.Deserialize<List<ComentarioItem>>(
                 inc.GetProperty("comentarios").GetRawText(),
-                new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                JsonOpts);
 
             var historial = JsonSerializer.Deserialize<List<HistorialItem>>(
                 inc.GetProperty("historial").GetRawText(),
-                new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                JsonOpts);
 
             Dispatcher.Invoke(() =>
             {
@@ -121,12 +118,12 @@ public partial class DetallePage : Page
         try
         {
             await Task.Delay(100);
-            var response = await _client.GetAsync("/api/Usuarios");
+            var response = await MainWindow.ApiClient.GetAsync("/api/Usuarios");
             if (response.IsSuccessStatusCode)
             {
                 var json = await response.Content.ReadAsStringAsync();
                 var todos = JsonSerializer.Deserialize<List<TecnicoItem>>(json,
-                    new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? new();
+                    JsonOpts) ?? new();
                 var tecnicos = todos.Where(u => u.Rol == "Tecnico").ToList();
 
                 //MessageBox.Show($"Técnicos encontrados: {tecnicos.Count}");
@@ -157,7 +154,7 @@ public partial class DetallePage : Page
             JsonSerializer.Serialize(new { estado = nuevoEstado }),
             Encoding.UTF8, "application/json");
 
-        var response = await _client.PutAsync($"/api/Incidencias/{_incidenciaId}", body);
+        var response = await MainWindow.ApiClient.PutAsync($"/api/Incidencias/{_incidenciaId}", body);
         if (response.IsSuccessStatusCode)
         {
             MessageBox.Show("Estado actualizado correctamente.");
@@ -167,7 +164,7 @@ public partial class DetallePage : Page
 
     private async void BtnAsignar_Click(object sender, RoutedEventArgs e)
     {
-        var response = await _client.PutAsync($"/api/Incidencias/{_incidenciaId}/asignar", null);
+        var response = await MainWindow.ApiClient.PutAsync($"/api/Incidencias/{_incidenciaId}/asignar", null);
         if (response.IsSuccessStatusCode)
         {
             MessageBox.Show("Incidencia asignada correctamente.");
@@ -193,7 +190,7 @@ public partial class DetallePage : Page
             }),
             Encoding.UTF8, "application/json");
 
-        var response = await _client.PutAsync($"/api/Incidencias/{_incidenciaId}", body);
+        var response = await MainWindow.ApiClient.PutAsync($"/api/Incidencias/{_incidenciaId}", body);
         if (response.IsSuccessStatusCode)
         {
             MessageBox.Show($"Incidencia asignada a {tecnico.Nombre}.");
@@ -210,7 +207,7 @@ public partial class DetallePage : Page
             JsonSerializer.Serialize(new { contenido, incidenciaId = _incidenciaId }),
             Encoding.UTF8, "application/json");
 
-        var response = await _client.PostAsync("/api/Comentarios", body);
+        var response = await MainWindow.ApiClient.PostAsync("/api/Comentarios", body);
         if (response.IsSuccessStatusCode)
         {
             TxtComentario.Clear();

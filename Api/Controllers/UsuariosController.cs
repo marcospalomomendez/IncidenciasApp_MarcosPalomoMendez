@@ -36,9 +36,15 @@ public class UsuariosController : ControllerBase
         var usuario = await _context.Usuarios.FindAsync(id);
         if (usuario == null) return NotFound();
 
-        if (dto.Rol != Roles.Usuario && dto.Rol != Roles.Tecnico && dto.Rol != Roles.Admin) {
+        if (dto.Rol != Roles.Usuario && dto.Rol != Roles.Tecnico && dto.Rol != Roles.Admin)
             return BadRequest("Rol no válido.");
-        } 
+
+        if (usuario.Rol == Roles.Admin && dto.Rol != Roles.Admin)
+        {
+            var totalAdmins = await _context.Usuarios.CountAsync(u => u.Rol == Roles.Admin);
+            if (totalAdmins <= 1)
+                return BadRequest("No se puede degradar al único administrador del sistema.");
+        }
 
         usuario.Rol = dto.Rol;
         await _context.SaveChangesAsync();

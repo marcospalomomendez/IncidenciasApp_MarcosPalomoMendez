@@ -9,7 +9,6 @@ namespace Web.Pages.Admin;
 public class IndexModel : PageModel
 {
     private readonly IHttpClientFactory _httpClientFactory;
-
     public int TotalIncidencias { get; set; }
     public int Abiertas { get; set; }
     public int EnProceso { get; set; }
@@ -37,14 +36,15 @@ public class IndexModel : PageModel
         client.DefaultRequestHeaders.Authorization =
             new AuthenticationHeaderValue("Bearer", token);
 
-        var response = await client.GetAsync("/api/Incidencias");
+        var response = await client.GetAsync("/api/Incidencias?pagina=1&tamanio=1000");
         if (response.IsSuccessStatusCode)
         {
             var json = await response.Content.ReadAsStringAsync();
-            var incidencias = JsonSerializer.Deserialize<List<IncidenciaModel>>(json,
-                new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? new();
+            var resultado = JsonSerializer.Deserialize<PaginadoModel<IncidenciaModel>>(json,
+                new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            var incidencias = resultado?.Datos ?? new();
 
-            TotalIncidencias = incidencias.Count;
+            TotalIncidencias = resultado?.Total ?? 0;
             Abiertas = incidencias.Count(i => i.Estado == "Abierta");
             EnProceso = incidencias.Count(i => i.Estado == "EnProceso");
             Cerradas = incidencias.Count(i => i.Estado == "Cerrada");
@@ -52,7 +52,7 @@ public class IndexModel : PageModel
             PorPrioridad = incidencias
                 .GroupBy(i => i.Prioridad)
                 .ToDictionary(g => g.Key, g => g.Count());
-
+           
             // Tiempo medio de resolución
             var resueltas = incidencias
                 .Where(i => i.Estado == "Resuelta" || i.Estado == "Cerrada")
@@ -61,9 +61,13 @@ public class IndexModel : PageModel
 
             if (resueltas.Any())
             {
-                var media = resueltas
-                    .Average(i => (i.FechaActualizacion!.Value - i.FechaCreacion).TotalHours);
-                TiempoMedioResolucion = $"{Math.Round(media, 1)} horas";
+                var tiempos = resueltas
+                    .Select(i => (i.FechaActualizacion!.Value - i.FechaCreacion).TotalHours)
+                    .Where(h => h > 0)
+                    .ToList();
+
+                if (tiempos.Any())
+                    TiempoMedioResolucion = $"{Math.Round(tiempos.Average(), 1)} horas";
             }
 
             // Técnico con más carga

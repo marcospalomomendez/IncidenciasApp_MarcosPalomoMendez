@@ -21,7 +21,6 @@
                 <a href="/Login" class="btn btn-outline-secondary">Cerrar sesión</a>
             </div>
         </div>
-
         @if (!Model.Incidencias.Any())
         {
             <div class="alert alert-info">No hay incidencias registradas.</div>
@@ -51,6 +50,31 @@
                     }
                 </tbody>
             </table>
+
+            <!-- Paginación -->
+            <nav class="mt-3">
+                <ul class="pagination justify-content-center">
+                    @if (Model.PaginaActual > 1)
+                    {
+                        <li class="page-item">
+                            <a class="page-link" href="?pagina=@(Model.PaginaActual - 1)">← Anterior</a>
+                        </li>
+                    }
+                    @for (int i = 1; i <= Model.TotalPaginas; i++)
+                    {
+                        <li class="page-item @(i == Model.PaginaActual ? "active" : "")">
+                            <a class="page-link" href="?pagina=@i">@i</a>
+                        </li>
+                    }
+                    @if (Model.PaginaActual < Model.TotalPaginas)
+                    {
+                        <li class="page-item">
+                            <a class="page-link" href="?pagina=@(Model.PaginaActual + 1)">Siguiente →</a>
+                        </li>
+                    }
+                </ul>
+                <p class="text-center text-muted small">@Model.Total incidencias en total</p>
+            </nav>
         }
     </div>
 </body>

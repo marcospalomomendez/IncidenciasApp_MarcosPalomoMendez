@@ -62,7 +62,7 @@ public class UsuariosModel : PageModel
         if (response.IsSuccessStatusCode)
             Mensaje = "Rol actualizado correctamente.";
         else
-            Error = "Error al actualizar el rol.";
+            Error = await response.Content.ReadAsStringAsync();
 
         return await OnGetAsync();
     }

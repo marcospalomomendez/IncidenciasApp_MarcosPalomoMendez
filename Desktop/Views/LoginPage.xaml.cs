@@ -8,15 +8,9 @@ namespace Desktop.Views;
 
 public partial class LoginPage : Page
 {
-    private HttpClient _client;
-
     public LoginPage()
     {
         InitializeComponent();
-        _client = new HttpClient
-        {
-            BaseAddress = new Uri(App.ApiUrl)
-        };
     }
 
     private async void BtnLogin_Click(object sender, RoutedEventArgs e)
@@ -34,7 +28,7 @@ public partial class LoginPage : Page
             });
 
             var content = new StringContent(body, Encoding.UTF8, "application/json");
-            var response = await _client.PostAsync("/api/Auth/login", content);
+            var response = await MainWindow.ApiClient.PostAsync("/api/Auth/login", content);
 
             if (!response.IsSuccessStatusCode)
             {
@@ -49,6 +43,10 @@ public partial class LoginPage : Page
             MainWindow.Token = result.GetProperty("token").GetString()!;
             MainWindow.Rol = result.GetProperty("rol").GetString()!;
             MainWindow.Nombre = result.GetProperty("nombre").GetString()!;
+            MainWindow.UsuarioId = result.GetProperty("id").GetInt32();
+
+            MainWindow.ApiClient.DefaultRequestHeaders.Authorization =
+                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", MainWindow.Token);
 
             if (MainWindow.Rol != "Tecnico" && MainWindow.Rol != "Admin")
             {
