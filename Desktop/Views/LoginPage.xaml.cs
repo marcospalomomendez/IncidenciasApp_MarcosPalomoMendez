@@ -67,9 +67,9 @@ public partial class LoginPage : Page
                 TxtError.Visibility = Visibility.Visible;
             }
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            TxtError.Text = ex.GetType().Name + ": " + ex.Message + "\n" + ex.StackTrace;
+            TxtError.Text = "No se pudo conectar con el servidor. Comprueba que la API esté en marcha.";
             TxtError.Visibility = Visibility.Visible;
         }
         finally
