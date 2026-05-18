@@ -131,6 +131,11 @@ public class IncidenciasController : ControllerBase
 
         var usuarioId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
 
+        if (!string.IsNullOrEmpty(dto.Estado) &&
+            dto.Estado != Estados.Abierta && dto.Estado != Estados.EnProceso &&
+            dto.Estado != Estados.Resuelta && dto.Estado != Estados.Cerrada)
+            return BadRequest("Estado no válido.");
+
         // Solo registrar historial si el estado cambia
         if (!string.IsNullOrEmpty(dto.Estado) && dto.Estado != incidencia.Estado)
         {
@@ -244,6 +249,69 @@ public class IncidenciasController : ControllerBase
             datos = incidencias
         });
     }
+    // GET: api/Incidencias/stats
+    [HttpGet("stats")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> GetStats()
+    {
+        var total    = await _context.Incidencias.CountAsync();
+        var abiertas = await _context.Incidencias.CountAsync(i => i.Estado == Estados.Abierta);
+        var enProceso = await _context.Incidencias.CountAsync(i => i.Estado == Estados.EnProceso);
+        var cerradas  = await _context.Incidencias.CountAsync(i => i.Estado == Estados.Cerrada);
+
+        var porPrioridad = await _context.Incidencias
+            .GroupBy(i => i.Prioridad)
+            .Select(g => new { Prioridad = g.Key, Count = g.Count() })
+            .ToListAsync();
+
+        // DateTime arithmetic must happen client-side (SQLite limitation)
+        var resueltas = await _context.Incidencias
+            .Where(i => (i.Estado == Estados.Resuelta || i.Estado == Estados.Cerrada)
+                        && i.FechaActualizacion != null)
+            .Select(i => new { i.FechaCreacion, Actualizada = i.FechaActualizacion!.Value })
+            .ToListAsync();
+
+        double? tiempoMedioHoras = null;
+        if (resueltas.Count > 0)
+        {
+            var tiempos = resueltas
+                .Select(r => (r.Actualizada - r.FechaCreacion).TotalHours)
+                .Where(h => h > 0)
+                .ToList();
+            if (tiempos.Count > 0)
+                tiempoMedioHoras = Math.Round(tiempos.Average(), 1);
+        }
+
+        var carga = await _context.Incidencias
+            .Where(i => i.TecnicoAsignadoId != null &&
+                        (i.Estado == Estados.Abierta || i.Estado == Estados.EnProceso))
+            .GroupBy(i => i.TecnicoAsignadoId)
+            .Select(g => new { TecnicoId = g.Key!.Value, Count = g.Count() })
+            .OrderByDescending(g => g.Count)
+            .FirstOrDefaultAsync();
+
+        string? tecnicoMasCargaNombre = null;
+        int? tecnicoMasCargaCount = null;
+        if (carga != null)
+        {
+            tecnicoMasCargaCount = carga.Count;
+            var tecnico = await _context.Usuarios.FindAsync(carga.TecnicoId);
+            tecnicoMasCargaNombre = tecnico?.Nombre;
+        }
+
+        return Ok(new
+        {
+            total,
+            abiertas,
+            enProceso,
+            cerradas,
+            porPrioridad = porPrioridad.ToDictionary(x => x.Prioridad, x => x.Count),
+            tiempoMedioHoras,
+            tecnicoMasCargaNombre,
+            tecnicoMasCargaCount
+        });
+    }
+
     // PUT: api/Incidencias/{id}/asignar
     [HttpPut("{id}/asignar")]
     [Authorize(Roles = "Tecnico,Admin")]

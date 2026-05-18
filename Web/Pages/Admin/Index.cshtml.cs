@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Net.Http.Headers;
 using System.Text.Json;
 using Shared;
-using Web.Models;
 
 namespace Web.Pages.Admin;
 
@@ -37,52 +36,41 @@ public class IndexModel : PageModel
         client.DefaultRequestHeaders.Authorization =
             new AuthenticationHeaderValue("Bearer", token);
 
-        var response = await client.GetAsync("/api/Incidencias?pagina=1&tamanio=1000");
+        var response = await client.GetAsync("/api/Incidencias/stats");
         if (response.IsSuccessStatusCode)
         {
             var json = await response.Content.ReadAsStringAsync();
-            var resultado = JsonSerializer.Deserialize<PaginadoModel<IncidenciaModel>>(json,
+            var stats = JsonSerializer.Deserialize<StatsDto>(json,
                 new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-            var incidencias = resultado?.Datos ?? new();
 
-            TotalIncidencias = resultado?.Total ?? 0;
-            Abiertas = incidencias.Count(i => i.Estado == "Abierta");
-            EnProceso = incidencias.Count(i => i.Estado == "EnProceso");
-            Cerradas = incidencias.Count(i => i.Estado == "Cerrada");
-
-            PorPrioridad = incidencias
-                .GroupBy(i => i.Prioridad)
-                .ToDictionary(g => g.Key, g => g.Count());
-           
-            // Tiempo medio de resoluci�n
-            var resueltas = incidencias
-                .Where(i => i.Estado == "Resuelta" || i.Estado == "Cerrada")
-                .Where(i => i.FechaActualizacion.HasValue)
-                .ToList();
-
-            if (resueltas.Any())
+            if (stats != null)
             {
-                var tiempos = resueltas
-                    .Select(i => (i.FechaActualizacion!.Value - i.FechaCreacion).TotalHours)
-                    .Where(h => h > 0)
-                    .ToList();
+                TotalIncidencias = stats.Total;
+                Abiertas         = stats.Abiertas;
+                EnProceso        = stats.EnProceso;
+                Cerradas         = stats.Cerradas;
+                PorPrioridad     = stats.PorPrioridad;
 
-                if (tiempos.Any())
-                    TiempoMedioResolucion = $"{Math.Round(tiempos.Average(), 1)} horas";
+                if (stats.TiempoMedioHoras.HasValue)
+                    TiempoMedioResolucion = $"{stats.TiempoMedioHoras.Value} horas";
+
+                if (stats.TecnicoMasCargaNombre != null && stats.TecnicoMasCargaCount.HasValue)
+                    TecnicoMasCarga = $"{stats.TecnicoMasCargaNombre} ({stats.TecnicoMasCargaCount.Value} incidencias)";
             }
-
-            // T�cnico con m�s carga
-            var conTecnico = incidencias
-                .Where(i => i.TecnicoAsignadoId.HasValue &&
-                            (i.Estado == "Abierta" || i.Estado == "EnProceso"))
-                .GroupBy(i => i.TecnicoAsignadoId)
-                .OrderByDescending(g => g.Count())
-                .FirstOrDefault();
-
-            if (conTecnico != null)
-                TecnicoMasCarga = $"T�cnico ID {conTecnico.Key} ({conTecnico.Count()} incidencias)";
         }
 
         return Page();
+    }
+
+    private class StatsDto
+    {
+        public int Total { get; set; }
+        public int Abiertas { get; set; }
+        public int EnProceso { get; set; }
+        public int Cerradas { get; set; }
+        public Dictionary<string, int> PorPrioridad { get; set; } = new();
+        public double? TiempoMedioHoras { get; set; }
+        public string? TecnicoMasCargaNombre { get; set; }
+        public int? TecnicoMasCargaCount { get; set; }
     }
 }
