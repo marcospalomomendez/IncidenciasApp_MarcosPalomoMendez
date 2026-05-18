@@ -15,7 +15,7 @@ public partial class LoginPage : Page
         InitializeComponent();
         _client = new HttpClient
         {
-            BaseAddress = new Uri("http://localhost:5196")
+            BaseAddress = new Uri(App.ApiUrl)
         };
     }
 

@@ -72,6 +72,21 @@ builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
+// Middleware de excepciones global
+app.UseExceptionHandler(errorApp =>
+{
+    errorApp.Run(async context =>
+    {
+        context.Response.StatusCode = 500;
+        context.Response.ContentType = "application/json";
+        await context.Response.WriteAsJsonAsync(new
+        {
+            error = "Ha ocurrido un error interno en el servidor.",
+            status = 500
+        });
+    });
+});
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

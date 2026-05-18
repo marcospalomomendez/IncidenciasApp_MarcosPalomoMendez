@@ -16,7 +16,7 @@ public partial class DetallePage : Page
     {
         InitializeComponent();
         _incidenciaId = id;
-        _client = new HttpClient { BaseAddress = new Uri("http://localhost:5196") };
+        _client = new HttpClient { BaseAddress = new Uri(App.ApiUrl) };
         _client.DefaultRequestHeaders.Authorization =
             new AuthenticationHeaderValue("Bearer", MainWindow.Token);
         Loaded += async (s, e) => await CargarDetalle();
