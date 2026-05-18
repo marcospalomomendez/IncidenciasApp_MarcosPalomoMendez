@@ -1,6 +1,7 @@
 ﻿using System.Net.Http;
 using System.Text;
 using System.Text.Json;
+using Shared;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -77,7 +78,7 @@ public partial class DetallePage : Page
                     ? new SolidColorBrush(Colors.Black)
                     : new SolidColorBrush(Colors.White);
 
-                if (MainWindow.Rol == "Admin")
+                if (MainWindow.Rol == Roles.Admin)
                 {
                     BtnAsignar.Visibility = Visibility.Collapsed;
                     TxtLabelTecnicos.Visibility = Visibility.Visible;
@@ -105,7 +106,7 @@ public partial class DetallePage : Page
                 LstHistorial.ItemsSource = historial;
             });
 
-            if (MainWindow.Rol == "Admin")
+            if (MainWindow.Rol == Roles.Admin)
                 await CargarTecnicos();
         }
         catch (Exception ex)
@@ -124,7 +125,7 @@ public partial class DetallePage : Page
                 var json = await response.Content.ReadAsStringAsync();
                 var todos = JsonSerializer.Deserialize<List<TecnicoItem>>(json,
                     JsonOpts) ?? new();
-                var tecnicos = todos.Where(u => u.Rol == "Tecnico").ToList();
+                var tecnicos = todos.Where(u => u.Rol == Roles.Tecnico).ToList();
 
                 //MessageBox.Show($"Técnicos encontrados: {tecnicos.Count}");
 

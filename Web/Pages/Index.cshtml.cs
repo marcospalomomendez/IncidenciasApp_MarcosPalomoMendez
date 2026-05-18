@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Shared;
 
 namespace Web.Pages;
 
@@ -14,8 +15,8 @@ public class IndexModel : PageModel
 
         return rol switch
         {
-            "Admin" => RedirectToPage("/Admin/Index"),
-            "Tecnico" => RedirectToPage("/Tecnico/Index"),
+            Roles.Admin => RedirectToPage("/Admin/Index"),
+            Roles.Tecnico => RedirectToPage("/Tecnico/Index"),
             _ => RedirectToPage("/Usuario/Index")
         };
     }

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
+using Shared;
 using Web.Models;
 
 namespace Web.Pages.Admin;
@@ -49,7 +50,7 @@ public class DetalleModel : PageModel
             var json = await responseUsuarios.Content.ReadAsStringAsync();
             var todos = JsonSerializer.Deserialize<List<UsuarioModel>>(json,
                 new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? new();
-            Tecnicos = todos.Where(u => u.Rol == "Tecnico").ToList();
+            Tecnicos = todos.Where(u => u.Rol == Roles.Tecnico).ToList();
         }
 
         return Page();

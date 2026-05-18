@@ -3,6 +3,7 @@ using System.Text;
 using System.Text.Json;
 using System.Windows;
 using System.Windows.Controls;
+using Shared;
 
 namespace Desktop.Views;
 
@@ -48,7 +49,7 @@ public partial class LoginPage : Page
             MainWindow.ApiClient.DefaultRequestHeaders.Authorization =
                 new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", MainWindow.Token);
 
-            if (MainWindow.Rol != "Tecnico" && MainWindow.Rol != "Admin")
+            if (MainWindow.Rol != Roles.Tecnico && MainWindow.Rol != Roles.Admin)
             {
                 TxtError.Text = "Acceso solo para Técnicos y Administradores.";
                 TxtError.Visibility = Visibility.Visible;

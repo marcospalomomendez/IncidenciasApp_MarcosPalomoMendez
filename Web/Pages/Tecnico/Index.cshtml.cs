@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
+using Shared;
 using Web.Models;
 
 namespace Web.Pages.Tecnico;
@@ -28,7 +29,7 @@ public class IndexModel : PageModel
             return RedirectToPage("/Login");
 
         var rol = HttpContext.Session.GetString("Rol");
-        if (rol != "Tecnico" && rol != "Admin")
+        if (rol != Roles.Tecnico && rol != Roles.Admin)
             return RedirectToPage("/Index");
 
         PaginaActual = pagina;

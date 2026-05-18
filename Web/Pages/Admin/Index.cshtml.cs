@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Net.Http.Headers;
 using System.Text.Json;
+using Shared;
 using Web.Models;
 
 namespace Web.Pages.Admin;
@@ -29,7 +30,7 @@ public class IndexModel : PageModel
             return RedirectToPage("/Login");
 
         var rol = HttpContext.Session.GetString("Rol");
-        if (rol != "Admin")
+        if (rol != Roles.Admin)
             return RedirectToPage("/Index");
 
         var client = _httpClientFactory.CreateClient("Api");
@@ -53,7 +54,7 @@ public class IndexModel : PageModel
                 .GroupBy(i => i.Prioridad)
                 .ToDictionary(g => g.Key, g => g.Count());
            
-            // Tiempo medio de resolución
+            // Tiempo medio de resoluciï¿½n
             var resueltas = incidencias
                 .Where(i => i.Estado == "Resuelta" || i.Estado == "Cerrada")
                 .Where(i => i.FechaActualizacion.HasValue)
@@ -70,7 +71,7 @@ public class IndexModel : PageModel
                     TiempoMedioResolucion = $"{Math.Round(tiempos.Average(), 1)} horas";
             }
 
-            // Técnico con más carga
+            // Tï¿½cnico con mï¿½s carga
             var conTecnico = incidencias
                 .Where(i => i.TecnicoAsignadoId.HasValue &&
                             (i.Estado == "Abierta" || i.Estado == "EnProceso"))
@@ -79,7 +80,7 @@ public class IndexModel : PageModel
                 .FirstOrDefault();
 
             if (conTecnico != null)
-                TecnicoMasCarga = $"Técnico ID {conTecnico.Key} ({conTecnico.Count()} incidencias)";
+                TecnicoMasCarga = $"Tï¿½cnico ID {conTecnico.Key} ({conTecnico.Count()} incidencias)";
         }
 
         return Page();

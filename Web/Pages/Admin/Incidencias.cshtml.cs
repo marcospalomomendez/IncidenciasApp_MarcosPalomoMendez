@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
+using Shared;
 using Web.Models;
 
 namespace Web.Pages.Admin;
@@ -29,7 +30,7 @@ public class IncidenciasModel : PageModel
             return RedirectToPage("/Login");
 
         var rol = HttpContext.Session.GetString("Rol");
-        if (rol != "Admin")
+        if (rol != Roles.Admin)
             return RedirectToPage("/Index");
 
         PaginaActual = pagina;

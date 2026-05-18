@@ -2,6 +2,7 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using Shared;
 
 namespace Desktop.Views;
 
@@ -19,7 +20,7 @@ public partial class IncidenciasPage : Page
         {
             TxtNombre.Text = $"Hola, {MainWindow.Nombre}";
             TxtRol.Text = MainWindow.Rol;
-            if (MainWindow.Rol == "Tecnico")
+            if (MainWindow.Rol == Roles.Tecnico)
             {
                 BtnMisIncidencias.Visibility = Visibility.Visible;
                 BtnSinAsignar.Visibility = Visibility.Visible;
@@ -43,7 +44,7 @@ public partial class IncidenciasPage : Page
         try
         {
             string url;
-            if (MainWindow.Rol == "Tecnico")
+            if (MainWindow.Rol == Roles.Tecnico)
             {
                 url = _modo switch
                 {
