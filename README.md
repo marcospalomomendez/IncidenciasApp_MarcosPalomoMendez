@@ -117,6 +117,7 @@ IncidenciasApp/
 │   ├── Models/                 # Usuario, Incidencia, Comentario, HistorialEstado
 │   ├── Data/                   # AppDbContext (EF Core)
 │   └── Migrations/
+├── Api.Tests/                  # Tests de integración (xUnit + WebApplicationFactory)
 ├── Web/                        # Cliente Razor Pages
 │   ├── Pages/
 │   │   ├── Admin/              # Dashboard, Incidencias, Usuarios, Detalle
@@ -126,6 +127,73 @@ IncidenciasApp/
 ├── Desktop/                    # Cliente WPF
 │   └── Views/                  # LoginPage, IncidenciasPage, DetallePage
 └── Shared/                     # Constantes: Roles, Estados, Prioridades
+```
+
+---
+
+## Tests
+
+El proyecto incluye 36 tests de integración en `Api.Tests/` que prueban los endpoints reales de la API con una base de datos SQLite en memoria. **No es necesario tener la API arrancada.**
+
+```bash
+dotnet test Api.Tests/Api.Tests.csproj
+```
+
+O desde Visual Studio: **Test → Test Explorer → Run All**.
+
+| Suite | Tests |
+|-------|-------|
+| `AuthTests` | Registro, login, validaciones |
+| `IncidenciasTests` | CRUD, roles, stats, asignación |
+| `UsuariosTests` | Gestión de roles, protección último admin |
+| `ComentariosTests` | Crear, listar, eliminar |
+
+---
+
+## Modelo entidad-relación
+
+```mermaid
+erDiagram
+    USUARIO {
+        int Id PK
+        string Nombre
+        string Email
+        string PasswordHash
+        string Rol
+    }
+    INCIDENCIA {
+        int Id PK
+        string Titulo
+        string Descripcion
+        string Estado
+        string Prioridad
+        datetime FechaCreacion
+        datetime FechaActualizacion
+        int UsuarioCreadorId FK
+        int TecnicoAsignadoId FK
+    }
+    COMENTARIO {
+        int Id PK
+        string Contenido
+        datetime FechaCreacion
+        int UsuarioId FK
+        int IncidenciaId FK
+    }
+    HISTORIALESTADO {
+        int Id PK
+        string EstadoAnterior
+        string EstadoNuevo
+        datetime FechaCambio
+        int UsuarioId FK
+        int IncidenciaId FK
+    }
+
+    USUARIO ||--o{ INCIDENCIA : "1 crea N"
+    USUARIO ||--o{ INCIDENCIA : "1 tiene asignada N"
+    USUARIO ||--o{ COMENTARIO : "1 escribe N"
+    USUARIO ||--o{ HISTORIALESTADO : "1 genera N"
+    INCIDENCIA ||--o{ COMENTARIO : "1 tiene N"
+    INCIDENCIA ||--o{ HISTORIALESTADO : "1 registra N"
 ```
 
 ---
