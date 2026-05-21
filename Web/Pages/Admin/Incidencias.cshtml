@@ -1,10 +1,10 @@
-﻿@page
+@page
 @model Web.Pages.Admin.IncidenciasModel
 @{
     ViewData["Title"] = "Todas las Incidencias";
 }
 <div class="container mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
         <h2>Todas las Incidencias</h2>
         <a href="/Admin/Index" class="btn btn-secondary">← Volver</a>
     </div>
@@ -14,97 +14,193 @@
     }
 
     <!-- Filtros -->
-    <div class="d-flex gap-2 mb-4 flex-wrap">
-        @foreach (var f in new[] { "Todas", "Abierta", "EnProceso", "Resuelta", "Cerrada", "SinAsignar" })
-        {
-            <a href="?filtro=@f&pagina=1"
-               class="btn btn-sm @(Model.FiltroActual == f ? "btn-dark" : "btn-outline-secondary")">
-                @(f == "SinAsignar" ? "Sin asignar" : f == "EnProceso" ? "En Proceso" : f)
-            </a>
-        }
+    <form method="get" class="row g-2 align-items-end mb-4">
+        <div class="col-auto">
+            <label class="form-label small mb-1">Orden</label>
+            <select name="orden" class="form-select form-select-sm">
+                <option value="desc" selected="@(Model.Orden == "desc" ? "selected" : null)">↓ Más nuevas</option>
+                <option value="asc"  selected="@(Model.Orden == "asc"  ? "selected" : null)">↑ Más antiguas</option>
+            </select>
+        </div>
+        <div class="col-auto">
+            <label class="form-label small mb-1">Estado</label>
+            <select name="estado" class="form-select form-select-sm">
+                <option value="Todas"    selected="@(Model.FiltroEstado == "Todas"    ? "selected" : null)">Todos</option>
+                <option value="Abierta"  selected="@(Model.FiltroEstado == "Abierta"  ? "selected" : null)">Abierta</option>
+                <option value="EnProceso" selected="@(Model.FiltroEstado == "EnProceso" ? "selected" : null)">En Proceso</option>
+                <option value="Resuelta" selected="@(Model.FiltroEstado == "Resuelta" ? "selected" : null)">Resuelta</option>
+                <option value="Cerrada"  selected="@(Model.FiltroEstado == "Cerrada"  ? "selected" : null)">Cerrada</option>
+            </select>
+        </div>
+        <div class="col-auto">
+            <label class="form-label small mb-1">Categoría</label>
+            <select name="categoria" class="form-select form-select-sm">
+                <option value=""         selected="@(Model.FiltroCategoria == ""         ? "selected" : null)">Todas</option>
+                <option value="Hardware" selected="@(Model.FiltroCategoria == "Hardware" ? "selected" : null)">Hardware</option>
+                <option value="Software" selected="@(Model.FiltroCategoria == "Software" ? "selected" : null)">Software</option>
+                <option value="Red"      selected="@(Model.FiltroCategoria == "Red"      ? "selected" : null)">Red</option>
+                <option value="Acceso"   selected="@(Model.FiltroCategoria == "Acceso"   ? "selected" : null)">Acceso</option>
+                <option value="Otro"     selected="@(Model.FiltroCategoria == "Otro"     ? "selected" : null)">Otro</option>
+            </select>
+        </div>
+        <div class="col-auto">
+            <label class="form-label small mb-1">Prioridad</label>
+            <select name="prioridad" class="form-select form-select-sm">
+                <option value=""       selected="@(Model.FiltroPrioridad == ""       ? "selected" : null)">Todas</option>
+                <option value="Critica" selected="@(Model.FiltroPrioridad == "Critica" ? "selected" : null)">Crítica</option>
+                <option value="Alta"   selected="@(Model.FiltroPrioridad == "Alta"   ? "selected" : null)">Alta</option>
+                <option value="Media"  selected="@(Model.FiltroPrioridad == "Media"  ? "selected" : null)">Media</option>
+                <option value="Baja"   selected="@(Model.FiltroPrioridad == "Baja"   ? "selected" : null)">Baja</option>
+            </select>
+        </div>
+        <div class="col-auto">
+            <label class="form-label small mb-1">SLA</label>
+            <select name="sla" class="form-select form-select-sm">
+                <option value="false" selected="@(!Model.FiltroSla ? "selected" : null)">Todos</option>
+                <option value="true"  selected="@(Model.FiltroSla  ? "selected" : null)">Solo excedido</option>
+            </select>
+        </div>
+        <div class="col-auto">
+            <label class="form-label small mb-1">Técnico</label>
+            <select name="sinAsignar" class="form-select form-select-sm">
+                <option value="false" selected="@(!Model.FiltroSinAsignar ? "selected" : null)">Todos</option>
+                <option value="true"  selected="@(Model.FiltroSinAsignar  ? "selected" : null)">Sin asignar</option>
+            </select>
+        </div>
+        <div class="col-auto">
+            <label class="form-label small mb-1">Buscar</label>
+            <input type="text" name="q" value="@Model.BusquedaQ" class="form-control form-control-sm" placeholder="Título o descripción..." style="width:200px">
+        </div>
+        <div class="col-auto d-flex gap-1 align-items-end">
+            <button type="submit" class="btn btn-sm btn-primary">Filtrar</button>
+            <a href="?" class="btn btn-sm btn-outline-secondary">Limpiar</a>
+            <button type="button" class="btn btn-sm btn-outline-info"
+                    data-bs-toggle="collapse" data-bs-target="#slaLeyenda"
+                    title="¿Qué es el SLA?">ℹ</button>
+        </div>
+    </form>
+
+    <!-- Leyenda SLA -->
+    <div class="collapse mb-3" id="slaLeyenda">
+        <div class="alert alert-light border py-2 mb-0">
+            <strong>SLA (Acuerdo de Nivel de Servicio)</strong> — tiempo máximo para resolver según prioridad:
+            <span class="ms-2"><span class="badge bg-danger">Crítica</span> 2 h</span>
+            <span class="ms-2"><span class="badge bg-warning text-dark">Alta</span> 8 h</span>
+            <span class="ms-2"><span class="badge bg-primary">Media</span> 24 h</span>
+            <span class="ms-2"><span class="badge bg-secondary">Baja</span> 72 h</span>
+            — el badge <span class="badge bg-danger">SLA ⚠</span> aparece cuando se supera ese límite sin resolver.
+        </div>
     </div>
 
-    <table class="table table-bordered table-hover">
-        <thead class="table-dark">
-            <tr>
-                <th>ID</th>
-                <th>Título</th>
-                <th>Estado</th>
-                <th>Prioridad</th>
-                <th>Técnico Asignado</th>
-                <th>Detalle Incidencia</th>
-                <th>Fecha</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var i in Model.Incidencias)
-            {
-                <tr>
-                    <td>@i.Id</td>
-                    <td>@i.Titulo</td>
-                    <td>
-                        <span class="badge
-                                    @(i.Estado == "Abierta" ? "bg-success" :
-                                                                i.Estado == "EnProceso" ? "bg-warning text-dark" :
-                                                                i.Estado == "Resuelta" ? "bg-info" : "bg-secondary")">
-                                                                                                                  @i.Estado
-                                                                                                              </span>
-                                                                                                          </td>
-                                                                                                          <td>
-                                                                                                              <span class="badge
-                                    @(i.Prioridad == "Critica" ? "bg-danger" :
-                                                                i.Prioridad == "Alta" ? "bg-warning text-dark" :
-                                                                i.Prioridad == "Media" ? "bg-primary" : "bg-secondary")">
-                        @i.Prioridad
-                    </span>
-                </td>
-                <td>@(i.TecnicoAsignadoId.HasValue ? $"Técnico #{i.TecnicoAsignadoId}" : "Sin asignar")</td>
-                <td><a href="/Admin/Detalle/@i.Id" class="btn btn-sm btn-outline-primary">Ver detalle</a></td>
-                <td>@i.FechaCreacion.ToString("dd/MM/yyyy HH:mm")</td>
-                <td class="align-middle" style="white-space:nowrap">
-                    <form method="post" style="display:inline-flex; align-items:center; gap:4px">
-                        <input type="hidden" name="id" value="@i.Id" />
-                        <select name="nuevoEstado" class="form-select form-select-sm" style="width:120px">
-                            <option value="Abierta"   selected="@(i.Estado == "Abierta"   ? "selected" : null)">Abierta</option>
-                            <option value="EnProceso" selected="@(i.Estado == "EnProceso" ? "selected" : null)">En Proceso</option>
-                            <option value="Resuelta"  selected="@(i.Estado == "Resuelta"  ? "selected" : null)">Resuelta</option>
-                            <option value="Cerrada"   selected="@(i.Estado == "Cerrada"   ? "selected" : null)">Cerrada</option>
-                        </select>
-                        <button type="submit" name="accion" value="estado" class="btn btn-sm btn-primary">Actualizar</button>
-                        <button type="submit" name="accion" value="eliminar" class="btn btn-sm btn-danger">Eliminar</button>
-                    </form>
-                </td>
-            </tr>
-                        }
-        </tbody>
-    </table>
-
-    <!-- Paginación -->
-    @if (Model.TotalPaginas > 1)
+    @if (!Model.Incidencias.Any())
     {
-    <nav class="mt-3">
-        <ul class="pagination justify-content-center">
-            @if (Model.PaginaActual > 1)
-            {
-                <li class="page-item">
-                    <a class="page-link" href="?filtro=@Model.FiltroActual&pagina=@(Model.PaginaActual - 1)">← Anterior</a>
-                </li>
-            }
-            @for (int i = 1; i <= Model.TotalPaginas; i++)
-            {
-                <li class="page-item @(i == Model.PaginaActual ? "active" : "")">
-                    <a class="page-link" href="?filtro=@Model.FiltroActual&pagina=@i">@i</a>
-                </li>
-            }
-            @if (Model.PaginaActual < Model.TotalPaginas)
-            {
-                <li class="page-item">
-                    <a class="page-link" href="?filtro=@Model.FiltroActual&pagina=@(Model.PaginaActual + 1)">Siguiente →</a>
-                </li>
-            }
-        </ul>
-        <p class="text-center text-muted small">@Model.Total incidencias en total</p>
-    </nav>
+        <div class="alert alert-info">No hay incidencias con este filtro.</div>
+    }
+    else
+    {
+        <table class="table table-bordered table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Título</th>
+                    <th>Estado</th>
+                    <th>Prioridad</th>
+                    <th>Categoría</th>
+                    <th>Técnico Asignado</th>
+                    <th>Fecha</th>
+                    <th>Detalle</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var i in Model.Incidencias)
+                {
+                    <tr>
+                        <td>@i.Id</td>
+                        <td>@i.Titulo</td>
+                        <td>
+                            <span class="badge @(i.Estado == "Abierta" ? "bg-success" : i.Estado == "EnProceso" ? "bg-warning text-dark" : i.Estado == "Resuelta" ? "bg-info" : "bg-secondary")">@i.Estado</span>
+                            @if (i.SlaExcedido) { <span class="badge bg-danger ms-1">SLA ⚠</span> }
+                        </td>
+                        <td>
+                            <span class="badge @(i.Prioridad == "Critica" ? "bg-danger" : i.Prioridad == "Alta" ? "bg-warning text-dark" : i.Prioridad == "Media" ? "bg-primary" : "bg-secondary")">@i.Prioridad</span>
+                        </td>
+                        <td>
+                            @if (i.Categoria != null)
+                            {
+                                var badgeStyle = i.Categoria switch {
+                                    "Hardware" => "background-color:#1a3864;color:white",
+                                    "Software" => "background-color:#198754;color:white",
+                                    "Red"      => "background-color:#fd7e14;color:white",
+                                    "Acceso"   => "background-color:#6f42c1;color:white",
+                                    _          => "background-color:#6c757d;color:white"
+                                };
+                                <span class="badge" style="@badgeStyle; cursor:default"
+                                      data-bs-toggle="tooltip" data-bs-placement="top"
+                                      title="@(i.JustificacionIA ?? i.Categoria)">@i.Categoria</span>
+                            }
+                            else { <span class="text-muted small">—</span> }
+                        </td>
+                        <td>@(i.TecnicoAsignadoId.HasValue ? $"Técnico #{i.TecnicoAsignadoId}" : "Sin asignar")</td>
+                        <td>@i.FechaCreacion.ToString("dd/MM/yyyy HH:mm")</td>
+                        <td><a href="/Admin/Detalle/@i.Id" class="btn btn-sm btn-outline-primary">Ver detalle</a></td>
+                        <td class="align-middle" style="white-space:nowrap">
+                            <form method="post" style="display:inline-flex; align-items:center; gap:4px">
+                                <input type="hidden" name="id" value="@i.Id" />
+                                <input type="hidden" name="estado" value="@Model.FiltroEstado" />
+                                <input type="hidden" name="orden" value="@Model.Orden" />
+                                <input type="hidden" name="categoria" value="@Model.FiltroCategoria" />
+                                <input type="hidden" name="prioridad" value="@Model.FiltroPrioridad" />
+                                <input type="hidden" name="sla" value="@Model.FiltroSla.ToString().ToLower()" />
+                                <input type="hidden" name="sinAsignar" value="@Model.FiltroSinAsignar.ToString().ToLower()" />
+                                <input type="hidden" name="q" value="@Model.BusquedaQ" />
+                                <select name="nuevoEstado" class="form-select form-select-sm" style="width:120px">
+                                    <option value="Abierta"   selected="@(i.Estado == "Abierta"   ? "selected" : null)">Abierta</option>
+                                    <option value="EnProceso" selected="@(i.Estado == "EnProceso" ? "selected" : null)">En Proceso</option>
+                                    <option value="Resuelta"  selected="@(i.Estado == "Resuelta"  ? "selected" : null)">Resuelta</option>
+                                    <option value="Cerrada"   selected="@(i.Estado == "Cerrada"   ? "selected" : null)">Cerrada</option>
+                                </select>
+                                <button type="submit" name="accion" value="estado" class="btn btn-sm btn-primary">Actualizar</button>
+                                <button type="submit" name="accion" value="eliminar" class="btn btn-sm btn-danger">Eliminar</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <!-- Paginación -->
+        @if (Model.TotalPaginas > 1)
+        {
+            <nav class="mt-3">
+                <ul class="pagination justify-content-center">
+                    @if (Model.PaginaActual > 1)
+                    {
+                        <li class="page-item">
+                            <a class="page-link" href="@Model.UrlFiltro(pagina: Model.PaginaActual - 1)">← Anterior</a>
+                        </li>
+                    }
+                    @for (int p = 1; p <= Model.TotalPaginas; p++)
+                    {
+                        <li class="page-item @(p == Model.PaginaActual ? "active" : "")">
+                            <a class="page-link" href="@Model.UrlFiltro(pagina: p)">@p</a>
+                        </li>
+                    }
+                    @if (Model.PaginaActual < Model.TotalPaginas)
+                    {
+                        <li class="page-item">
+                            <a class="page-link" href="@Model.UrlFiltro(pagina: Model.PaginaActual + 1)">Siguiente →</a>
+                        </li>
+                    }
+                </ul>
+                <p class="text-center text-muted small">@Model.Total incidencias en total</p>
+            </nav>
+        }
     }
 </div>
+
+@section Scripts {
+<script>
+    document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(el => new bootstrap.Tooltip(el));
+</script>
+}

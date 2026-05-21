@@ -1,16 +1,67 @@
-﻿@page
+@page
 @model Web.Pages.Usuario.IndexModel
 @{
     ViewData["Title"] = "Mis Incidencias";
 }
 <div class="container mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
         <h2>Mis Incidencias</h2>
         <a href="/Usuario/Crear" class="btn btn-primary">+ Nueva Incidencia</a>
     </div>
+
+    <!-- Filtros -->
+    <form method="get" class="row g-2 align-items-end mb-4">
+        <div class="col-auto">
+            <label class="form-label small mb-1">Orden</label>
+            <select name="orden" class="form-select form-select-sm">
+                <option value="desc" selected="@(Model.Orden == "desc" ? "selected" : null)">↓ Más nuevas</option>
+                <option value="asc"  selected="@(Model.Orden == "asc"  ? "selected" : null)">↑ Más antiguas</option>
+            </select>
+        </div>
+        <div class="col-auto">
+            <label class="form-label small mb-1">Estado</label>
+            <select name="estado" class="form-select form-select-sm">
+                <option value="Todas"     selected="@(Model.FiltroEstado == "Todas"     ? "selected" : null)">Todos</option>
+                <option value="Abierta"   selected="@(Model.FiltroEstado == "Abierta"   ? "selected" : null)">Abierta</option>
+                <option value="EnProceso" selected="@(Model.FiltroEstado == "EnProceso" ? "selected" : null)">En Proceso</option>
+                <option value="Resuelta"  selected="@(Model.FiltroEstado == "Resuelta"  ? "selected" : null)">Resuelta</option>
+                <option value="Cerrada"   selected="@(Model.FiltroEstado == "Cerrada"   ? "selected" : null)">Cerrada</option>
+            </select>
+        </div>
+        <div class="col-auto">
+            <label class="form-label small mb-1">Categoría</label>
+            <select name="categoria" class="form-select form-select-sm">
+                <option value=""         selected="@(Model.FiltroCategoria == ""         ? "selected" : null)">Todas</option>
+                <option value="Hardware" selected="@(Model.FiltroCategoria == "Hardware" ? "selected" : null)">Hardware</option>
+                <option value="Software" selected="@(Model.FiltroCategoria == "Software" ? "selected" : null)">Software</option>
+                <option value="Red"      selected="@(Model.FiltroCategoria == "Red"      ? "selected" : null)">Red</option>
+                <option value="Acceso"   selected="@(Model.FiltroCategoria == "Acceso"   ? "selected" : null)">Acceso</option>
+                <option value="Otro"     selected="@(Model.FiltroCategoria == "Otro"     ? "selected" : null)">Otro</option>
+            </select>
+        </div>
+        <div class="col-auto">
+            <label class="form-label small mb-1">Prioridad</label>
+            <select name="prioridad" class="form-select form-select-sm">
+                <option value=""        selected="@(Model.FiltroPrioridad == ""        ? "selected" : null)">Todas</option>
+                <option value="Critica" selected="@(Model.FiltroPrioridad == "Critica" ? "selected" : null)">Crítica</option>
+                <option value="Alta"    selected="@(Model.FiltroPrioridad == "Alta"    ? "selected" : null)">Alta</option>
+                <option value="Media"   selected="@(Model.FiltroPrioridad == "Media"   ? "selected" : null)">Media</option>
+                <option value="Baja"    selected="@(Model.FiltroPrioridad == "Baja"    ? "selected" : null)">Baja</option>
+            </select>
+        </div>
+        <div class="col-auto">
+            <label class="form-label small mb-1">Buscar</label>
+            <input type="text" name="q" value="@Model.BusquedaQ" class="form-control form-control-sm" placeholder="Título o descripción..." style="width:200px">
+        </div>
+        <div class="col-auto d-flex gap-1 align-items-end">
+            <button type="submit" class="btn btn-sm btn-primary">Filtrar</button>
+            <a href="?" class="btn btn-sm btn-outline-secondary">Limpiar</a>
+        </div>
+    </form>
+
     @if (!Model.Incidencias.Any())
     {
-        <div class="alert alert-info">No tienes incidencias registradas.</div>
+        <div class="alert alert-info">No hay incidencias con este filtro.</div>
     }
     else
     {
@@ -21,8 +72,9 @@
                     <th>Título</th>
                     <th>Estado</th>
                     <th>Prioridad</th>
+                    <th>Categoría</th>
                     <th>Fecha</th>
-                    <th>Detalle Incidencia</th>
+                    <th>Detalle</th>
                 </tr>
             </thead>
             <tbody>
@@ -32,25 +84,31 @@
                         <td>@i.Id</td>
                         <td>@i.Titulo</td>
                         <td>
-                            <span class="badge
-                                        @(i.Estado == "Abierta" ? "bg-success" :
-                                                                    i.Estado == "EnProceso" ? "bg-warning text-dark" :
-                                                                    i.Estado == "Resuelta" ? "bg-info" : "bg-secondary")">
-                                                                                                                      @i.Estado
-                                                                                                                  </span>
-                                                                                                              </td>
-                                                                                                              <td>
-                                                                                                                  <span class="badge
-                                        @(i.Prioridad == "Critica" ? "bg-danger" :
-                                                                    i.Prioridad == "Alta" ? "bg-warning text-dark" :
-                                                                    i.Prioridad == "Media" ? "bg-primary" : "bg-secondary")">
-                        @i.Prioridad
-                    </span>
-                </td>
-                <td>@i.FechaCreacion.ToString("dd/MM/yyyy HH:mm")</td>
-                <td><a href="/Usuario/Detalle/@i.Id" class="btn btn-sm btn-outline-primary">Ver detalle</a></td>
-            </tr>
-                        }
+                            <span class="badge @(i.Estado == "Abierta" ? "bg-success" : i.Estado == "EnProceso" ? "bg-warning text-dark" : i.Estado == "Resuelta" ? "bg-info" : "bg-secondary")">@i.Estado</span>
+                        </td>
+                        <td>
+                            <span class="badge @(i.Prioridad == "Critica" ? "bg-danger" : i.Prioridad == "Alta" ? "bg-warning text-dark" : i.Prioridad == "Media" ? "bg-primary" : "bg-secondary")">@i.Prioridad</span>
+                        </td>
+                        <td>
+                            @if (i.Categoria != null)
+                            {
+                                var badgeStyle = i.Categoria switch {
+                                    "Hardware" => "background-color:#1a3864;color:white",
+                                    "Software" => "background-color:#198754;color:white",
+                                    "Red"      => "background-color:#fd7e14;color:white",
+                                    "Acceso"   => "background-color:#6f42c1;color:white",
+                                    _          => "background-color:#6c757d;color:white"
+                                };
+                                <span class="badge" style="@badgeStyle; cursor:default"
+                                      data-bs-toggle="tooltip" data-bs-placement="top"
+                                      title="@(i.JustificacionIA ?? i.Categoria)">@i.Categoria</span>
+                            }
+                            else { <span class="text-muted small">—</span> }
+                        </td>
+                        <td>@i.FechaCreacion.ToString("dd/MM/yyyy HH:mm")</td>
+                        <td><a href="/Usuario/Detalle/@i.Id" class="btn btn-sm btn-outline-primary">Ver detalle</a></td>
+                    </tr>
+                }
             </tbody>
         </table>
 
@@ -62,19 +120,19 @@
                     @if (Model.PaginaActual > 1)
                     {
                         <li class="page-item">
-                            <a class="page-link" href="?pagina=@(Model.PaginaActual - 1)">← Anterior</a>
+                            <a class="page-link" href="@Model.UrlFiltro(pagina: Model.PaginaActual - 1)">← Anterior</a>
                         </li>
                     }
-                    @for (int i = 1; i <= Model.TotalPaginas; i++)
+                    @for (int p = 1; p <= Model.TotalPaginas; p++)
                     {
-                        <li class="page-item @(i == Model.PaginaActual ? "active" : "")">
-                            <a class="page-link" href="?pagina=@i">@i</a>
+                        <li class="page-item @(p == Model.PaginaActual ? "active" : "")">
+                            <a class="page-link" href="@Model.UrlFiltro(pagina: p)">@p</a>
                         </li>
                     }
                     @if (Model.PaginaActual < Model.TotalPaginas)
                     {
                         <li class="page-item">
-                            <a class="page-link" href="?pagina=@(Model.PaginaActual + 1)">Siguiente →</a>
+                            <a class="page-link" href="@Model.UrlFiltro(pagina: Model.PaginaActual + 1)">Siguiente →</a>
                         </li>
                     }
                 </ul>
@@ -83,3 +141,9 @@
         }
     }
 </div>
+
+@section Scripts {
+<script>
+    document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(el => new bootstrap.Tooltip(el));
+</script>
+}

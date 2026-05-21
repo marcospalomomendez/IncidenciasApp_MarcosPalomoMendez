@@ -11,6 +11,7 @@ public class AppDbContext : DbContext
     public DbSet<Incidencia> Incidencias { get; set; }
     public DbSet<Comentario> Comentarios { get; set; }
     public DbSet<HistorialEstado> HistorialEstados { get; set; }
+    public DbSet<Notificacion> Notificaciones { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

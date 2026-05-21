@@ -42,6 +42,9 @@
                         <a href="/Usuario/Crear" class="btn btn-success btn-sm">+ Nueva</a>
                     }
 
+                    <a href="/Notificaciones" class="btn btn-outline-light btn-sm position-relative" id="notifBtn">
+                        🔔 <span id="notifBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="display:none">0</span>
+                    </a>
                     <a href="/Logout" class="btn btn-danger btn-sm">Cerrar sesión</a>
                 }
             </div>
@@ -58,5 +61,25 @@
 
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     @await RenderSectionAsync("Scripts", required: false)
+    @if (Context.Session.GetString("Token") != null)
+    {
+        <script>
+            async function actualizarBadgeNotif() {
+                try {
+                    const res = await fetch('/Notificaciones?handler=Count');
+                    if (res.ok) {
+                        const data = await res.json();
+                        const badge = document.getElementById('notifBadge');
+                        if (badge) {
+                            badge.textContent = data.noLeidas;
+                            badge.style.display = data.noLeidas > 0 ? 'inline-block' : 'none';
+                        }
+                    }
+                } catch {}
+            }
+            actualizarBadgeNotif();
+            setInterval(actualizarBadgeNotif, 30000);
+        </script>
+    }
 </body>
 </html>

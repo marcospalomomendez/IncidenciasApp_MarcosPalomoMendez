@@ -83,6 +83,12 @@ namespace Api.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("Categoria")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("JustificacionIA")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Descripcion")
                         .IsRequired()
                         .HasColumnType("TEXT");
@@ -118,6 +124,35 @@ namespace Api.Migrations
                     b.HasIndex("UsuarioCreadorId");
 
                     b.ToTable("Incidencias");
+                });
+
+            modelBuilder.Entity("Api.Models.Notificacion", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("FechaCreacion")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int?>("IncidenciaId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("Leida")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Mensaje")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("UsuarioId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UsuarioId");
+
+                    b.ToTable("Notificaciones");
                 });
 
             modelBuilder.Entity("Api.Models.Usuario", b =>
@@ -201,6 +236,17 @@ namespace Api.Migrations
                     b.Navigation("TecnicoAsignado");
 
                     b.Navigation("UsuarioCreador");
+                });
+
+            modelBuilder.Entity("Api.Models.Notificacion", b =>
+                {
+                    b.HasOne("Api.Models.Usuario", "Usuario")
+                        .WithMany()
+                        .HasForeignKey("UsuarioId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Usuario");
                 });
 
             modelBuilder.Entity("Api.Models.Incidencia", b =>
