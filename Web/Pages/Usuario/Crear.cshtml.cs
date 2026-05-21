@@ -24,7 +24,7 @@ public class CrearModel : PageModel
         return Page();
     }
 
-    public async Task<IActionResult> OnPostAsync(string titulo, string descripcion, string prioridad)
+    public async Task<IActionResult> OnPostAsync(string titulo, string descripcion, string prioridad = "Media")
     {
         var token = HttpContext.Session.GetString("Token");
         if (string.IsNullOrEmpty(token))
@@ -45,6 +45,13 @@ public class CrearModel : PageModel
             Error = "Error al crear la incidencia.";
             return Page();
         }
+
+        var json = await response.Content.ReadAsStringAsync();
+        var creada = JsonSerializer.Deserialize<JsonElement>(json);
+        var iaDisponible = creada.TryGetProperty("justificacionIA", out var j) && j.ValueKind != JsonValueKind.Null;
+
+        if (!iaDisponible)
+            TempData["AvisoIA"] = "La clasificación automática no está disponible. Se usó la prioridad que seleccionaste manualmente.";
 
         return RedirectToPage("/Usuario/Index");
     }

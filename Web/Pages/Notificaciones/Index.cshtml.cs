@@ -64,7 +64,7 @@ public class IndexModel : PageModel
 
         var client = _httpClientFactory.CreateClient("Api");
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-        await client.PatchAsync($"/api/Notificaciones/{id}/leer", null);
+        await client.DeleteAsync($"/api/Notificaciones/{id}");
 
         return RedirectToPage();
     }
@@ -76,7 +76,7 @@ public class IndexModel : PageModel
 
         var client = _httpClientFactory.CreateClient("Api");
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-        await client.PatchAsync("/api/Notificaciones/leer-todas", null);
+        await client.DeleteAsync("/api/Notificaciones/todas");
 
         return RedirectToPage();
     }

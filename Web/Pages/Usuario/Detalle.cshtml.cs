@@ -11,17 +11,20 @@ public class DetalleModel : PageModel
 {
     private readonly IHttpClientFactory _httpClientFactory;
     public IncidenciaDetalleModel? Incidencia { get; set; }
+    public string ReturnUrl { get; set; } = "/Usuario/Index";
 
     public DetalleModel(IHttpClientFactory httpClientFactory)
     {
         _httpClientFactory = httpClientFactory;
     }
 
-    public async Task<IActionResult> OnGetAsync(int id)
+    public async Task<IActionResult> OnGetAsync(int id, string returnUrl = "")
     {
         var token = HttpContext.Session.GetString("Token");
         if (string.IsNullOrEmpty(token))
             return RedirectToPage("/Login");
+
+        ReturnUrl = string.IsNullOrEmpty(returnUrl) ? "/Usuario/Index" : returnUrl;
 
         var client = _httpClientFactory.CreateClient("Api");
         client.DefaultRequestHeaders.Authorization =
@@ -38,7 +41,7 @@ public class DetalleModel : PageModel
         return Page();
     }
 
-    public async Task<IActionResult> OnPostAsync(int incidenciaId, string contenido)
+    public async Task<IActionResult> OnPostAsync(int incidenciaId, string contenido, string returnUrl = "")
     {
         var token = HttpContext.Session.GetString("Token");
         if (string.IsNullOrEmpty(token))
@@ -54,6 +57,6 @@ public class DetalleModel : PageModel
 
         await client.PostAsync("/api/Comentarios", body);
 
-        return RedirectToPage(new { id = incidenciaId });
+        return RedirectToPage(new { id = incidenciaId, returnUrl });
     }
 }

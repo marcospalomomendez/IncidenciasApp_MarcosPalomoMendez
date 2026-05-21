@@ -19,9 +19,10 @@ public class IndexModel : PageModel
     public string Orden           { get; set; } = "desc";
     public string FiltroCategoria { get; set; } = "";
     public string FiltroPrioridad { get; set; } = "";
-    public bool   FiltroSla       { get; set; } = false;
+    public bool   FiltroSla        { get; set; } = false;
     public bool   FiltroSinAsignar { get; set; } = false;
-    public string BusquedaQ       { get; set; } = "";
+    public bool   FiltroMias       { get; set; } = false;
+    public string BusquedaQ        { get; set; } = "";
 
     public IndexModel(IHttpClientFactory httpClientFactory)
     {
@@ -30,7 +31,7 @@ public class IndexModel : PageModel
 
     public string UrlFiltro(string? estado = null, string? orden = null,
         string? categoria = null, string? prioridad = null,
-        bool? sla = null, bool? sinAsignar = null, string? q = null, int pagina = 1)
+        bool? sla = null, bool? sinAsignar = null, bool? mias = null, string? q = null, int pagina = 1)
     {
         var e  = estado     ?? FiltroEstado;
         var o  = orden      ?? Orden;
@@ -38,14 +39,15 @@ public class IndexModel : PageModel
         var p  = prioridad  ?? FiltroPrioridad;
         var s  = sla        ?? FiltroSla;
         var sa = sinAsignar ?? FiltroSinAsignar;
-        var qv = Uri.EscapeDataString(q ?? BusquedaQ);
-        return $"?estado={e}&orden={o}&categoria={c}&prioridad={p}&sla={s}&sinAsignar={sa}&q={qv}&pagina={pagina}";
+        var m  = mias       ?? FiltroMias;
+        var qv = Uri.EscapeDataString(q ?? BusquedaQ ?? "");
+        return $"?estado={e}&orden={o}&categoria={c}&prioridad={p}&sla={s}&sinAsignar={sa}&mias={m}&q={qv}&pagina={pagina}";
     }
 
     public async Task<IActionResult> OnGetAsync(int pagina = 1,
         string estado = "Todas", string orden = "desc",
         string categoria = "", string prioridad = "",
-        bool sla = false, bool sinAsignar = false, string q = "")
+        bool sla = false, bool sinAsignar = false, bool mias = false, string q = "")
     {
         var token = HttpContext.Session.GetString("Token");
         if (string.IsNullOrEmpty(token)) return RedirectToPage("/Login");
@@ -59,17 +61,19 @@ public class IndexModel : PageModel
         FiltroPrioridad  = prioridad;
         FiltroSla        = sla;
         FiltroSinAsignar = sinAsignar;
-        BusquedaQ        = q;
+        FiltroMias       = mias;
+        BusquedaQ        = q ?? "";
 
         var client = _httpClientFactory.CreateClient("Api");
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
         var url = $"/api/Incidencias/panel-tecnico?pagina={pagina}&tamanio=10&orden={orden}";
-        if (estado != "Todas")     url += $"&estado={estado}";
+        if (estado != "Todas")              url += $"&estado={estado}";
         if (!string.IsNullOrEmpty(categoria)) url += $"&categoria={categoria}";
         if (!string.IsNullOrEmpty(prioridad)) url += $"&prioridad={prioridad}";
         if (sla)        url += "&slaExcedido=true";
         if (sinAsignar) url += "&soloSinAsignar=true";
+        if (mias)       url += "&soloAsignadas=true";
         if (!string.IsNullOrEmpty(q)) url += $"&q={Uri.EscapeDataString(q)}";
 
         var response = await client.GetAsync(url);
@@ -89,7 +93,7 @@ public class IndexModel : PageModel
     public async Task<IActionResult> OnPostAsync(int id, string nuevoEstado,
         string estado = "Todas", string orden = "desc",
         string categoria = "", string prioridad = "",
-        bool sla = false, bool sinAsignar = false, string q = "")
+        bool sla = false, bool sinAsignar = false, bool mias = false, string q = "")
     {
         var token = HttpContext.Session.GetString("Token");
         if (string.IsNullOrEmpty(token)) return RedirectToPage("/Login");
@@ -102,6 +106,6 @@ public class IndexModel : PageModel
             Encoding.UTF8, "application/json");
         await client.PutAsync($"/api/Incidencias/{id}", body);
 
-        return await OnGetAsync(1, estado, orden, categoria, prioridad, sla, sinAsignar, q);
+        return await OnGetAsync(1, estado, orden, categoria, prioridad, sla, sinAsignar, mias, q);
     }
 }

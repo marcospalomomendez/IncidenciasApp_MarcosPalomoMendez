@@ -9,6 +9,14 @@
         <a href="/Usuario/Crear" class="btn btn-primary">+ Nueva Incidencia</a>
     </div>
 
+    @if (TempData["AvisoIA"] != null)
+    {
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+            ⚠ @TempData["AvisoIA"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
     <!-- Filtros -->
     <form method="get" class="row g-2 align-items-end mb-4">
         <div class="col-auto">

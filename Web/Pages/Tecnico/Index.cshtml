@@ -64,6 +64,13 @@
             </select>
         </div>
         <div class="col-auto">
+            <label class="form-label small mb-1">Mis incidencias</label>
+            <select name="mias" class="form-select form-select-sm">
+                <option value="false" selected="@(!Model.FiltroMias ? "selected" : null)">Todas</option>
+                <option value="true"  selected="@(Model.FiltroMias  ? "selected" : null)">Solo las mías</option>
+            </select>
+        </div>
+        <div class="col-auto">
             <label class="form-label small mb-1">Buscar</label>
             <input type="text" name="q" value="@Model.BusquedaQ" class="form-control form-control-sm" placeholder="Título o descripción..." style="width:200px">
         </div>
@@ -149,6 +156,7 @@
                                 <input type="hidden" name="prioridad" value="@Model.FiltroPrioridad" />
                                 <input type="hidden" name="sla" value="@Model.FiltroSla.ToString().ToLower()" />
                                 <input type="hidden" name="sinAsignar" value="@Model.FiltroSinAsignar.ToString().ToLower()" />
+                                <input type="hidden" name="mias" value="@Model.FiltroMias.ToString().ToLower()" />
                                 <input type="hidden" name="q" value="@Model.BusquedaQ" />
                                 <select name="nuevoEstado" class="form-select form-select-sm" style="width:120px">
                                     <option value="Abierta"   selected="@(i.Estado == "Abierta"   ? "selected" : null)">Abierta</option>

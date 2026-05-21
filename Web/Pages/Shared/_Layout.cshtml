@@ -1,85 +1,264 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Gestión de Incidencias</title>
+    <title>@ViewData["Title"] — Gestión de Incidencias</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    @inject Microsoft.Extensions.Configuration.IConfiguration _cfg
     <style>
-        body { padding-bottom: 60px; }
-        .navbar-brand { font-weight: bold; }
-        footer { position: fixed; bottom: 0; width: 100%; background-color: #343a40; color: white; text-align: center; padding: 10px; z-index: 1030; }
-        .badge-rol { font-size: 0.75rem; }
+        *, *::before, *::after { box-sizing: border-box; }
+
+        body {
+            display: flex;
+            min-height: 100vh;
+            margin: 0;
+            background: #F0F2F5;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        /* ── Sidebar ─────────────────────────────────── */
+        .sidebar {
+            width: 250px;
+            min-height: 100vh;
+            background: #161D35;
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .sidebar-logo {
+            padding: 14px 16px;
+            border-bottom: 1px solid #20284A;
+            display: flex;
+            align-items: center;
+            gap: 11px;
+        }
+        .sidebar-logo-badge {
+            width: 44px; height: 44px;
+            background: #0D6EFD;
+            border-radius: 11px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 24px; font-weight: 900; color: white;
+            flex-shrink: 0;
+        }
+        .sidebar-logo-name  { color: white; font-size: 15px; font-weight: 700; line-height: 1.2; }
+        .sidebar-logo-sub   { color: #445070; font-size: 10px; }
+
+        .sidebar-section {
+            color: #334060;
+            font-size: 9px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 18px 20px 6px;
+        }
+
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 20px;
+            color: #8899B4;
+            text-decoration: none;
+            font-size: 14px;
+            border-left: 3px solid transparent;
+            transition: background .15s, color .15s;
+        }
+        .sidebar-link:hover {
+            background: #22294A;
+            color: #C8D6EC;
+            text-decoration: none;
+        }
+        .sidebar-link.active {
+            background: #22294A;
+            color: white;
+            border-left-color: #0D6EFD;
+            font-weight: 600;
+        }
+        .sidebar-link .icon { font-size: 15px; width: 20px; text-align: center; }
+
+        .sidebar-user {
+            margin-top: auto;
+            padding: 14px;
+            border-top: 1px solid #20284A;
+        }
+        .sidebar-avatar {
+            width: 36px; height: 36px;
+            background: #0D6EFD;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: 15px; color: white;
+            flex-shrink: 0;
+        }
+        .sidebar-user-name { color: white; font-size: 13px; font-weight: 600; line-height: 1.2; }
+        .sidebar-user-rol  { color: #445070; font-size: 11px; }
+
+        /* ── Main content ────────────────────────────── */
+        .main-content {
+            flex: 1;
+            min-width: 0;
+            overflow: auto;
+        }
     </style>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container">
-            <a class="navbar-brand" href="/">Gestión de Incidencias</a>
-            <div class="navbar-nav ms-auto d-flex flex-row align-items-center gap-3">
-                @if (Context.Session.GetString("Nombre") != null)
-                {
-                    <span class="text-white">
-                        Hola, <strong>@Context.Session.GetString("Nombre")</strong>
-                        <span class="badge bg-secondary badge-rol ms-1">
-                            @Context.Session.GetString("Rol")
-                        </span>
-                    </span>
+@{
+    var nombre = Context.Session.GetString("Nombre");
+    var rol    = Context.Session.GetString("Rol");
+    var path   = Context.Request.Path.Value ?? "";
+}
 
-                    @if (Context.Session.GetString("Rol") == "Admin")
-                    {
-                        <a href="/Admin/Index" class="btn btn-outline-light btn-sm">Dashboard</a>
-                        <a href="/Admin/Usuarios" class="btn btn-outline-light btn-sm">Usuarios</a>
-                        <a href="/Admin/Incidencias" class="btn btn-outline-light btn-sm">Incidencias</a>
-                    }
-                    else if (Context.Session.GetString("Rol") == "Tecnico")
-                    {
-                        <a href="/Tecnico/Index" class="btn btn-outline-light btn-sm">Panel Técnico</a>
-                    }
-                    else
-                    {
-                        <a href="/Usuario/Index" class="btn btn-outline-light btn-sm">Mis Incidencias</a>
-                        <a href="/Usuario/Crear" class="btn btn-success btn-sm">+ Nueva</a>
-                    }
-
-                    <a href="/Notificaciones" class="btn btn-outline-light btn-sm position-relative" id="notifBtn">
-                        🔔 <span id="notifBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="display:none">0</span>
-                    </a>
-                    <a href="/Logout" class="btn btn-danger btn-sm">Cerrar sesión</a>
-                }
+@if (nombre != null)
+{
+    <nav class="sidebar">
+        <!-- Logo -->
+        <div class="sidebar-logo">
+            <div class="sidebar-logo-badge">!</div>
+            <div>
+                <div class="sidebar-logo-name">Incidencias</div>
+                <div class="sidebar-logo-sub">Panel de gestión</div>
             </div>
         </div>
-    </nav>
 
-    <div class="container mt-4">
-        @RenderBody()
-    </div>
+        <!-- Navigation -->
+        <div>
+            <div class="sidebar-section">Navegación</div>
 
-    <footer>
-        <small>Sistema de Gestión de Incidencias &copy; 2026 — Campus FP</small>
-    </footer>
-
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    @await RenderSectionAsync("Scripts", required: false)
-    @if (Context.Session.GetString("Token") != null)
-    {
-        <script>
-            async function actualizarBadgeNotif() {
-                try {
-                    const res = await fetch('/Notificaciones?handler=Count');
-                    if (res.ok) {
-                        const data = await res.json();
-                        const badge = document.getElementById('notifBadge');
-                        if (badge) {
-                            badge.textContent = data.noLeidas;
-                            badge.style.display = data.noLeidas > 0 ? 'inline-block' : 'none';
-                        }
-                    }
-                } catch {}
+            @if (rol == "Admin")
+            {
+                <a href="/Admin/Index" class="sidebar-link @(path == "/Admin/Index" || path == "/Admin" ? "active" : "")">
+                    <span class="icon">⌂</span> Dashboard
+                </a>
+                <a href="/Admin/Incidencias" class="sidebar-link @(path.StartsWith("/Admin/Incidencias") ? "active" : "")">
+                    <span class="icon">≡</span> Incidencias
+                </a>
+                <a href="/Admin/Usuarios" class="sidebar-link @(path.StartsWith("/Admin/Usuarios") ? "active" : "")">
+                    <span class="icon">👥</span> Usuarios
+                </a>
             }
+            else if (rol == "Tecnico")
+            {
+                <a href="/Tecnico/Index" class="sidebar-link @(path.StartsWith("/Tecnico/Index") || path == "/Tecnico" ? "active" : "")">
+                    <span class="icon">≡</span> Incidencias
+                </a>
+            }
+            else
+            {
+                <a href="/Usuario/Index" class="sidebar-link @(path.StartsWith("/Usuario/Index") || path == "/Usuario" ? "active" : "")">
+                    <span class="icon">≡</span> Mis Incidencias
+                </a>
+                <a href="/Usuario/Crear" class="sidebar-link @(path.StartsWith("/Usuario/Crear") ? "active" : "")">
+                    <span class="icon">＋</span> Nueva Incidencia
+                </a>
+            }
+
+            <a href="/Notificaciones" id="notifLink"
+               class="sidebar-link @(path.StartsWith("/Notificaciones") ? "active" : "")">
+                <span class="icon">🔔</span>
+                Notificaciones
+                <span id="notifBadge"
+                      class="badge bg-danger rounded-pill ms-auto"
+                      style="display:none; font-size:10px">0</span>
+            </a>
+        </div>
+
+        <!-- User area -->
+        <div class="sidebar-user">
+            <div class="d-flex align-items-center gap-2 mb-2">
+                <div class="sidebar-avatar">
+                    @(nombre.Length > 0 ? nombre[0].ToString().ToUpper() : "U")
+                </div>
+                <div style="min-width:0">
+                    <div class="sidebar-user-name text-truncate">@nombre</div>
+                    <div class="sidebar-user-rol">@rol</div>
+                </div>
+            </div>
+            <a href="/Logout" class="btn btn-danger btn-sm w-100">Cerrar sesión</a>
+        </div>
+    </nav>
+}
+
+<main class="main-content">
+    @RenderBody()
+</main>
+
+<!-- Toast container -->
+<div id="toastContainer" style="position:fixed;bottom:24px;right:24px;z-index:9999;
+     display:flex;flex-direction:column-reverse;gap:8px;pointer-events:none;max-width:340px"></div>
+
+<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@@microsoft/signalr@@8.0.7/dist/browser/signalr.min.js"></script>
+@await RenderSectionAsync("Scripts", required: false)
+
+@if (Context.Session.GetString("Token") != null)
+{
+    <script>
+        // ── Badge de notificaciones ──────────────────────────────────────
+        async function actualizarBadgeNotif() {
+            try {
+                const res = await fetch('/Notificaciones?handler=Count');
+                if (res.ok) {
+                    const data = await res.json();
+                    const badge = document.getElementById('notifBadge');
+                    if (badge) {
+                        badge.textContent = data.noLeidas;
+                        badge.style.display = data.noLeidas > 0 ? 'inline-block' : 'none';
+                    }
+                }
+            } catch {}
+        }
+        actualizarBadgeNotif();
+        setInterval(actualizarBadgeNotif, 60000);
+
+        // ── Toast ────────────────────────────────────────────────────────
+        function mostrarToast(msg, color) {
+            color = color || '#161D35';
+            const id = 'toast_' + Date.now();
+            const el = document.createElement('div');
+            el.id = id;
+            el.style.cssText = `background:${color};color:white;padding:13px 16px;border-radius:10px;
+                font-size:13px;box-shadow:0 4px 16px rgba(0,0,0,.25);pointer-events:auto;
+                display:flex;align-items:center;gap:10px;
+                animation:toastIn .25s ease`;
+            el.innerHTML = `<span>🔔</span><span style="flex:1">${msg}</span>
+                <span onclick="this.parentElement.remove()" style="cursor:pointer;opacity:.7">✕</span>`;
+            document.getElementById('toastContainer').appendChild(el);
+            setTimeout(() => el.remove(), 6000);
+        }
+
+        // ── SignalR ──────────────────────────────────────────────────────
+        const _token = '@Context.Session.GetString("Token")';
+        const _apiUrl = '@_cfg["ApiUrl"]?.TrimEnd('/')';
+
+        const _hub = new signalR.HubConnectionBuilder()
+            .withUrl(_apiUrl + '/hubs/incidencias?access_token=' + _token)
+            .withAutomaticReconnect()
+            .configureLogging(signalR.LogLevel.Warning)
+            .build();
+
+        _hub.on('NuevaIncidencia', (id, titulo, cat) => {
             actualizarBadgeNotif();
-            setInterval(actualizarBadgeNotif, 30000);
-        </script>
-    }
+            mostrarToast(`Nueva incidencia #${id}: ${titulo} [${cat || ''}]`, '#198754');
+        });
+        _hub.on('CambioEstado', (id, estado) => {
+            actualizarBadgeNotif();
+            mostrarToast(`Incidencia #${id} cambió a <b>${estado}</b>`);
+        });
+        _hub.on('NuevaNotificacion', msg => {
+            actualizarBadgeNotif();
+            mostrarToast(msg);
+        });
+
+        _hub.start().catch(e => console.warn('SignalR no disponible:', e));
+    </script>
+    <style>
+        @@keyframes toastIn { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:none; } }
+    </style>
+}
 </body>
 </html>

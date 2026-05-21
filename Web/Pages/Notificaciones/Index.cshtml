@@ -6,10 +6,10 @@
 <div class="container mt-4">
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h2>Notificaciones</h2>
-        @if (Model.Notificaciones.Any(n => !n.Leida))
+        @if (Model.Notificaciones.Any())
         {
             <form method="post" asp-page-handler="LeerTodas">
-                <button type="submit" class="btn btn-sm btn-outline-secondary">✓ Marcar todas como leídas</button>
+                <button type="submit" class="btn btn-sm btn-outline-secondary">🗑 Borrar todas</button>
             </form>
         }
     </div>
@@ -35,15 +35,12 @@
                     <div class="d-flex gap-2 align-items-center ms-3">
                         @if (n.IncidenciaId.HasValue)
                         {
-                            <a href="/@(Model.RolUsuario)/Detalle/@n.IncidenciaId" class="btn btn-sm btn-outline-primary">Ver</a>
+                            <a href="/@(Model.RolUsuario)/Detalle/@n.IncidenciaId?returnUrl=/Notificaciones" class="btn btn-sm btn-outline-primary">Ver</a>
                         }
-                        @if (!n.Leida)
-                        {
-                            <form method="post" asp-page-handler="Leer">
-                                <input type="hidden" name="id" value="@n.Id" />
-                                <button type="submit" class="btn btn-sm btn-outline-secondary">✓</button>
-                            </form>
-                        }
+                        <form method="post" asp-page-handler="Leer">
+                            <input type="hidden" name="id" value="@n.Id" />
+                            <button type="submit" class="btn btn-sm btn-outline-danger" title="Eliminar">🗑</button>
+                        </form>
                     </div>
                 </div>
             }

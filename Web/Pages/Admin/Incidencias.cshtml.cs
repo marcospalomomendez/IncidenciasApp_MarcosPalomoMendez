@@ -39,7 +39,7 @@ public class IncidenciasModel : PageModel
         var p  = prioridad  ?? FiltroPrioridad;
         var s  = sla        ?? FiltroSla;
         var sa = sinAsignar ?? FiltroSinAsignar;
-        var qv = Uri.EscapeDataString(q ?? BusquedaQ);
+        var qv = Uri.EscapeDataString(q ?? BusquedaQ ?? "");
         return $"?estado={e}&orden={o}&categoria={c}&prioridad={p}&sla={s}&sinAsignar={sa}&q={qv}&pagina={pagina}";
     }
 
@@ -59,7 +59,7 @@ public class IncidenciasModel : PageModel
         FiltroPrioridad = prioridad;
         FiltroSla       = sla;
         FiltroSinAsignar = sinAsignar;
-        BusquedaQ       = q;
+        BusquedaQ       = q ?? "";
 
         var client = _httpClientFactory.CreateClient("Api");
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);

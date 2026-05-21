@@ -32,7 +32,7 @@ public class IndexModel : PageModel
         var o  = orden     ?? Orden;
         var c  = categoria ?? FiltroCategoria;
         var p  = prioridad ?? FiltroPrioridad;
-        var qv = Uri.EscapeDataString(q ?? BusquedaQ);
+        var qv = Uri.EscapeDataString(q ?? BusquedaQ ?? "");
         return $"?estado={e}&orden={o}&categoria={c}&prioridad={p}&q={qv}&pagina={pagina}";
     }
 
@@ -50,7 +50,7 @@ public class IndexModel : PageModel
         Orden           = orden;
         FiltroCategoria = categoria;
         FiltroPrioridad = prioridad;
-        BusquedaQ       = q;
+        BusquedaQ       = q ?? "";
 
         var client = _httpClientFactory.CreateClient("Api");
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);

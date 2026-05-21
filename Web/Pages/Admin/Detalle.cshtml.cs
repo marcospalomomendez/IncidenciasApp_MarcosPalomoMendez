@@ -13,6 +13,8 @@ public class DetalleModel : PageModel
     private readonly IHttpClientFactory _httpClientFactory;
     public IncidenciaDetalleModel? Incidencia { get; set; }
     public List<UsuarioModel> Tecnicos { get; set; } = new();
+    public List<AuditoriaEntryModel> Auditoria { get; set; } = new();
+    public string ReturnUrl { get; set; } = "/Admin/Incidencias";
 
     public DetalleModel(IHttpClientFactory httpClientFactory)
     {
@@ -28,11 +30,13 @@ public class DetalleModel : PageModel
         return client;
     }
 
-    public async Task<IActionResult> OnGetAsync(int id)
+    public async Task<IActionResult> OnGetAsync(int id, string returnUrl = "")
     {
         var token = HttpContext.Session.GetString("Token");
         if (string.IsNullOrEmpty(token))
             return RedirectToPage("/Login");
+
+        ReturnUrl = string.IsNullOrEmpty(returnUrl) ? "/Admin/Incidencias" : returnUrl;
 
         var client = GetClient();
 
@@ -53,9 +57,17 @@ public class DetalleModel : PageModel
             Tecnicos = todos.Where(u => u.Rol == Roles.Tecnico).ToList();
         }
 
+        var responseAuditoria = await client.GetAsync($"/api/Incidencias/{id}/auditoria");
+        if (responseAuditoria.IsSuccessStatusCode)
+        {
+            var jsonA = await responseAuditoria.Content.ReadAsStringAsync();
+            Auditoria = JsonSerializer.Deserialize<List<AuditoriaEntryModel>>(jsonA,
+                new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? new();
+        }
+
         return Page();
     }
-    public async Task<IActionResult> OnPostCambiarEstadoAsync(int id, string nuevoEstado)
+    public async Task<IActionResult> OnPostCambiarEstadoAsync(int id, string nuevoEstado, string returnUrl = "")
     {
         var client = GetClient();
 
@@ -75,27 +87,27 @@ public class DetalleModel : PageModel
             Encoding.UTF8, "application/json");
 
         await client.PutAsync($"/api/Incidencias/{id}", body);
-        return RedirectToPage(new { id });
+        return RedirectToPage(new { id, returnUrl });
     }
 
-    public async Task<IActionResult> OnPostAsignarTecnicoAsync(int id, int? tecnicoId)
+    public async Task<IActionResult> OnPostAsignarTecnicoAsync(int id, int? tecnicoId, string returnUrl = "")
     {
         var client = GetClient();
         var body = new StringContent(
             JsonSerializer.Serialize(new { tecnicoAsignadoId = tecnicoId }),
             Encoding.UTF8, "application/json");
 
-        var response = await client.PutAsync($"/api/Incidencias/{id}", body);
-        return RedirectToPage(new { id });
+        await client.PutAsync($"/api/Incidencias/{id}", body);
+        return RedirectToPage(new { id, returnUrl });
     }
 
-    public async Task<IActionResult> OnPostComentarAsync(int incidenciaId, string contenido)
+    public async Task<IActionResult> OnPostComentarAsync(int incidenciaId, string contenido, string returnUrl = "")
     {
         var client = GetClient();
         var body = new StringContent(
             JsonSerializer.Serialize(new { contenido, incidenciaId }),
             Encoding.UTF8, "application/json");
         await client.PostAsync("/api/Comentarios", body);
-        return RedirectToPage(new { id = incidenciaId });
+        return RedirectToPage(new { id = incidenciaId, returnUrl });
     }
 }
