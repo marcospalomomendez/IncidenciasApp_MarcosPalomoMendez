@@ -11,5 +11,8 @@
         public DateTime? FechaActualizacion { get; set; }
         public int UsuarioCreadorId { get; set; }
         public int? TecnicoAsignadoId { get; set; }
+        public string? Categoria { get; set; }
+        public string? JustificacionIA { get; set; }
+        public bool SlaExcedido { get; set; }
     }
 }

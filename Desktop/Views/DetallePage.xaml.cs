@@ -37,6 +37,9 @@ public partial class DetallePage : Page
             var tecnicoId = inc.GetProperty("tecnicoAsignadoId");
             var tecnicoTexto = tecnicoId.ValueKind == JsonValueKind.Null
                 ? "Sin asignar" : $"Técnico #{tecnicoId.GetInt32()}";
+            var categoria = inc.TryGetProperty("categoria", out var catEl) && catEl.ValueKind != JsonValueKind.Null
+                ? catEl.GetString() : null;
+            var slaExcedido = inc.TryGetProperty("slaExcedido", out var slaEl) && slaEl.GetBoolean();
 
             var comentarios = JsonSerializer.Deserialize<List<ComentarioItem>>(
                 inc.GetProperty("comentarios").GetRawText(),
@@ -77,6 +80,13 @@ public partial class DetallePage : Page
                 TxtPrioridad.Foreground = prioridad == "Alta"
                     ? new SolidColorBrush(Colors.Black)
                     : new SolidColorBrush(Colors.White);
+
+                if (categoria != null)
+                {
+                    TxtCategoria.Text = categoria;
+                    BadgeCategoria.Visibility = Visibility.Visible;
+                }
+                BadgeSla.Visibility = slaExcedido ? Visibility.Visible : Visibility.Collapsed;
 
                 if (MainWindow.Rol == Roles.Admin)
                 {

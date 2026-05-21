@@ -56,13 +56,21 @@
                     <TextBlock x:Name="TxtDescripcion" TextWrapping="Wrap" FontSize="13"
                                Foreground="#555" Margin="0,0,0,14"/>
 
-                    <!-- Badges estado y prioridad -->
-                    <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                    <!-- Badges estado, prioridad, categoría y SLA -->
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,10" FlowDirection="LeftToRight">
                         <Border x:Name="BadgeEstado" CornerRadius="4" Padding="8,3" Margin="0,0,8,0">
                             <TextBlock x:Name="TxtEstado" FontSize="12" FontWeight="SemiBold"/>
                         </Border>
-                        <Border x:Name="BadgePrioridad" CornerRadius="4" Padding="8,3">
+                        <Border x:Name="BadgePrioridad" CornerRadius="4" Padding="8,3" Margin="0,0,8,0">
                             <TextBlock x:Name="TxtPrioridad" FontSize="12" FontWeight="SemiBold"/>
+                        </Border>
+                        <Border x:Name="BadgeCategoria" CornerRadius="4" Padding="8,3" Margin="0,0,8,0"
+                                Background="#0DCAF0" Visibility="Collapsed">
+                            <TextBlock x:Name="TxtCategoria" FontSize="12" FontWeight="SemiBold" Foreground="#212529"/>
+                        </Border>
+                        <Border x:Name="BadgeSla" CornerRadius="4" Padding="8,3"
+                                Background="#DC3545" Visibility="Collapsed">
+                            <TextBlock Text="SLA ⚠" FontSize="12" FontWeight="SemiBold" Foreground="White"/>
                         </Border>
                     </StackPanel>
 

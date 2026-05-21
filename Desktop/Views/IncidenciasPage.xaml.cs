@@ -174,6 +174,8 @@ public class IncidenciaItem
     public string Titulo { get; set; } = string.Empty;
     public string Estado { get; set; } = string.Empty;
     public string Prioridad { get; set; } = string.Empty;
+    public string? Categoria { get; set; }
+    public bool SlaExcedido { get; set; }
     public DateTime FechaCreacion { get; set; }
     public int? TecnicoAsignadoId { get; set; }
 }

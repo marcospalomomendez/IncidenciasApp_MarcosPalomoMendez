@@ -1,4 +1,5 @@
 using Api.Data;
+using Api.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
@@ -69,6 +70,15 @@ builder.Services.AddCors(options =>
 });
 
 builder.Services.AddAuthorization();
+
+builder.Services.AddHttpClient("Groq", (sp, client) =>
+{
+    client.BaseAddress = new Uri("https://api.groq.com/openai/v1/");
+    var key = sp.GetRequiredService<IConfiguration>()["Groq:ApiKey"];
+    if (!string.IsNullOrEmpty(key))
+        client.DefaultRequestHeaders.Add("Authorization", $"Bearer {key}");
+});
+builder.Services.AddScoped<IClasificadorService, ClasificadorService>();
 
 var app = builder.Build();
 

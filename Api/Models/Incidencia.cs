@@ -13,6 +13,8 @@ public class Incidencia
     public Usuario UsuarioCreador { get; set; } = null!;
     public int? TecnicoAsignadoId { get; set; }
     public Usuario? TecnicoAsignado { get; set; }
+    public string? Categoria { get; set; }
+    public string? JustificacionIA { get; set; }
     public List<Comentario> Comentarios { get; set; } = new();
     public List<HistorialEstado> Historial { get; set; } = new();
 }
