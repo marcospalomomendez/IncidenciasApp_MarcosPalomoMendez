@@ -1,12 +1,102 @@
-﻿<Window x:Class="Desktop.MainWindow"
+<Window x:Class="Desktop.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Gestión de Incidencias"
         WindowStartupLocation="CenterScreen"
         WindowState="Maximized"
-        Background="#F0F0F0">
+        Background="#F0F2F5">
     <Grid>
-        <Frame x:Name="MainFrame" NavigationUIVisibility="Hidden"
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition x:Name="SidebarCol" Width="250"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- Sidebar -->
+        <Grid x:Name="Sidebar" Grid.Column="0" Background="#161D35">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="70"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <!-- Logo -->
+            <Border Grid.Row="0" BorderBrush="#20284A" BorderThickness="0,0,0,1" Padding="16,0">
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <Border Width="44" Height="44" CornerRadius="11" Background="#0D6EFD" Margin="0,0,12,0">
+                        <TextBlock Text="!" FontSize="24" FontWeight="Black"
+                                   Foreground="White"
+                                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock Text="Incidencias" Foreground="White" FontSize="15" FontWeight="Bold"/>
+                        <TextBlock Text="Panel de gestión" Foreground="#445070" FontSize="10"/>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- Navigation -->
+            <StackPanel Grid.Row="1" Margin="0,18,0,0">
+                <TextBlock Text="NAVEGACIÓN" Foreground="#334060" FontSize="9" FontWeight="Bold"
+                           Margin="20,0,0,10"/>
+                <Button x:Name="BtnNavDashboard"
+                        Style="{StaticResource NavBtn}"
+                        Click="BtnNavDashboard_Click">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="&#x2302;" FontSize="16" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                        <TextBlock Text="Dashboard" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+                <Button x:Name="BtnNavIncidencias"
+                        Style="{StaticResource NavBtn}"
+                        Click="BtnNavIncidencias_Click">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="&#x2261;" FontSize="16" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                        <TextBlock Text="Incidencias" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+            </StackPanel>
+
+            <!-- User info + Logout -->
+            <Border Grid.Row="2" BorderBrush="#20284A" BorderThickness="0,1,0,0" Padding="14,14">
+                <StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                        <Border Width="38" Height="38" CornerRadius="19"
+                                Background="#0D6EFD" Margin="0,0,10,0">
+                            <TextBlock x:Name="TxtAvatar" Text="U" Foreground="White"
+                                       FontWeight="Bold" FontSize="15"
+                                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <StackPanel VerticalAlignment="Center">
+                            <TextBlock x:Name="TxtSidebarNombre" Text="—" Foreground="White"
+                                       FontSize="13" FontWeight="SemiBold"/>
+                            <TextBlock x:Name="TxtSidebarRol" Text="" Foreground="#445070"
+                                       FontSize="11"/>
+                        </StackPanel>
+                    </StackPanel>
+                    <Button x:Name="BtnSidebarLogout" Content="Cerrar sesión"
+                            Style="{StaticResource DangerBtn}"
+                            Padding="10,7"
+                            HorizontalAlignment="Stretch"
+                            Click="BtnSidebarLogout_Click"/>
+                </StackPanel>
+            </Border>
+        </Grid>
+
+        <!-- Main content frame -->
+        <Frame x:Name="MainFrame" Grid.Column="1"
+               NavigationUIVisibility="Hidden"
                BorderThickness="0" Padding="0"/>
+
+        <!-- Toast notification bar -->
+        <Border x:Name="ToastBar" Grid.Column="0" Grid.ColumnSpan="2"
+                VerticalAlignment="Bottom" HorizontalAlignment="Stretch"
+                Background="#1A2340" Padding="20,13"
+                Visibility="Collapsed" Panel.ZIndex="100">
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                <TextBlock Text="🔔" FontSize="15" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                <TextBlock x:Name="TxtToastMsg" Foreground="White" FontSize="13"
+                           VerticalAlignment="Center" TextWrapping="Wrap"/>
+            </StackPanel>
+        </Border>
     </Grid>
 </Window>

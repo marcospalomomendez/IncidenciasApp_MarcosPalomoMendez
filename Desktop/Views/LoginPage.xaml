@@ -1,28 +1,94 @@
-﻿<Page x:Class="Desktop.Views.LoginPage"
+<Page x:Class="Desktop.Views.LoginPage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      Title="Login" Background="#F0F0F0">
-    <Grid Background="#F0F0F0">
-        <Border Width="350" VerticalAlignment="Center" HorizontalAlignment="Center"
-                Background="White" CornerRadius="8" Padding="30">
+      Title="Login">
+    <Page.Background>
+        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+            <GradientStop Color="#161D35" Offset="0"/>
+            <GradientStop Color="#0D2050" Offset="1"/>
+        </LinearGradientBrush>
+    </Page.Background>
+
+    <Grid>
+        <!-- Decorative circle top-right -->
+        <Ellipse Width="400" Height="400" Opacity="0.04"
+                 HorizontalAlignment="Right" VerticalAlignment="Top"
+                 Margin="0,-100,-100,0">
+            <Ellipse.Fill>
+                <SolidColorBrush Color="White"/>
+            </Ellipse.Fill>
+        </Ellipse>
+
+        <!-- Decorative circle bottom-left -->
+        <Ellipse Width="300" Height="300" Opacity="0.04"
+                 HorizontalAlignment="Left" VerticalAlignment="Bottom"
+                 Margin="-80,0,0,-80">
+            <Ellipse.Fill>
+                <SolidColorBrush Color="#0D6EFD"/>
+            </Ellipse.Fill>
+        </Ellipse>
+
+        <!-- Login card -->
+        <Border Width="380" VerticalAlignment="Center" HorizontalAlignment="Center"
+                Background="White" CornerRadius="14" Padding="36,32">
             <Border.Effect>
-                <DropShadowEffect BlurRadius="10" Opacity="0.2"/>
+                <DropShadowEffect BlurRadius="30" Opacity="0.25" ShadowDepth="0"/>
             </Border.Effect>
             <StackPanel>
-                <TextBlock Text="Gestión de Incidencias" FontSize="18" FontWeight="Bold"
-                           Foreground="#212529" HorizontalAlignment="Center" Margin="0,0,0,20"/>
-                <TextBlock Text="Email" FontWeight="SemiBold" Margin="0,0,0,4"/>
-                <TextBox x:Name="TxtEmail" Height="35" Padding="8" FontSize="14"
-                         BorderBrush="#CCCCCC" BorderThickness="1"/>
-                <TextBlock Text="Contraseña" FontWeight="SemiBold" Margin="0,12,0,4"/>
-                <PasswordBox x:Name="TxtPassword" Height="35" Padding="8" FontSize="14"
-                             BorderBrush="#CCCCCC" BorderThickness="1"/>
-                <TextBlock x:Name="TxtError" Foreground="Red" FontSize="12"
-                           Margin="0,8,0,0" Visibility="Collapsed"/>
-                <Button x:Name="BtnLogin" Content="Iniciar sesión" Height="40"
-                        Margin="0,16,0,0" Background="#0D6EFD" Foreground="White"
-                        FontSize="14" FontWeight="Bold" BorderThickness="0"
-                        Cursor="Hand" Click="BtnLogin_Click"/>
+                <!-- Logo area -->
+                <StackPanel HorizontalAlignment="Center" Margin="0,0,0,28">
+                    <Border Width="44" Height="44" CornerRadius="11" Background="#0D6EFD"
+                            HorizontalAlignment="Center" Margin="0,0,0,14">
+                        <TextBlock Text="!" FontSize="24" FontWeight="Black" Foreground="White"
+                                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    <TextBlock Text="Gestión de Incidencias" FontSize="20" FontWeight="Bold"
+                               Foreground="#161D35" HorizontalAlignment="Center"/>
+                    <TextBlock Text="Accede con tu cuenta de técnico o admin"
+                               FontSize="12" Foreground="#9AA3B0"
+                               HorizontalAlignment="Center" Margin="0,6,0,0"
+                               TextAlignment="Center"/>
+                </StackPanel>
+
+                <!-- Email field -->
+                <TextBlock Text="Email" FontWeight="SemiBold" FontSize="13"
+                           Foreground="#374151" Margin="0,0,0,6"/>
+                <Border BorderBrush="#E5E7EB" BorderThickness="1" CornerRadius="7"
+                        Margin="0,0,0,16">
+                    <Border.Style>
+                        <Style TargetType="Border">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding ElementName=TxtEmail, Path=IsFocused}" Value="True">
+                                    <Setter Property="BorderBrush" Value="#0D6EFD"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Border.Style>
+                    <TextBox x:Name="TxtEmail" Height="40" Padding="12,0" FontSize="14"
+                             BorderThickness="0" VerticalContentAlignment="Center"/>
+                </Border>
+
+                <!-- Password field -->
+                <TextBlock Text="Contraseña" FontWeight="SemiBold" FontSize="13"
+                           Foreground="#374151" Margin="0,0,0,6"/>
+                <Border BorderBrush="#E5E7EB" BorderThickness="1" CornerRadius="7"
+                        Margin="0,0,0,6">
+                    <PasswordBox x:Name="TxtPassword" Height="40" Padding="12,0" FontSize="14"
+                                 BorderThickness="0" VerticalContentAlignment="Center"/>
+                </Border>
+
+                <!-- Error message -->
+                <TextBlock x:Name="TxtError" Foreground="#DC3545" FontSize="12"
+                           Margin="0,4,0,12" Visibility="Collapsed"
+                           TextWrapping="Wrap"/>
+
+                <!-- Login button -->
+                <Button x:Name="BtnLogin" Content="Iniciar sesión" Height="44"
+                        Margin="0,8,0,0"
+                        Style="{StaticResource PrimaryBtn}"
+                        FontSize="15" Padding="0,0"
+                        HorizontalAlignment="Stretch"
+                        Click="BtnLogin_Click"/>
             </StackPanel>
         </Border>
     </Grid>

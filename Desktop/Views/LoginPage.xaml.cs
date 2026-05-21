@@ -1,4 +1,4 @@
-﻿using System.Net.Http;
+using System.Net.Http;
 using System.Text;
 using System.Text.Json;
 using System.Windows;
@@ -59,15 +59,23 @@ public partial class LoginPage : Page
             var window = Application.Current.MainWindow as MainWindow;
             if (window != null)
             {
-                window.MainFrame.Navigate(new IncidenciasPage());
-            }
-            else
-            {
-                TxtError.Text = "Error al navegar.";
-                TxtError.Visibility = Visibility.Visible;
+                window.UpdateSidebarUser();
+                window.ShowSidebar(true);
+                _ = window.ConnectSignalRAsync();
+
+                if (MainWindow.Rol == Roles.Admin)
+                {
+                    window.SetActiveNav("dashboard");
+                    window.MainFrame.Navigate(new DashboardPage());
+                }
+                else
+                {
+                    window.SetActiveNav("incidencias");
+                    window.MainFrame.Navigate(new IncidenciasPage());
+                }
             }
         }
-        catch (Exception)
+        catch
         {
             TxtError.Text = "No se pudo conectar con el servidor. Comprueba que la API esté en marcha.";
             TxtError.Visibility = Visibility.Visible;

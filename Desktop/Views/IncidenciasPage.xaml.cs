@@ -1,4 +1,4 @@
-﻿using System.Text.Json;
+using System.Text.Json;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -11,6 +11,7 @@ public partial class IncidenciasPage : Page
     private List<IncidenciaItem> _todas = new();
     private int _paginaActual = 1;
     private int _totalPaginas = 1;
+    private int _total = 0;
     private const int Tamanio = 10;
 
     public IncidenciasPage()
@@ -18,8 +19,9 @@ public partial class IncidenciasPage : Page
         InitializeComponent();
         Loaded += async (s, e) =>
         {
-            TxtNombre.Text = $"Hola, {MainWindow.Nombre}";
-            TxtRol.Text = MainWindow.Rol;
+            var window = (MainWindow)Application.Current.MainWindow;
+            window.SetActiveNav("incidencias");
+
             if (MainWindow.Rol == Roles.Tecnico)
             {
                 BtnMisIncidencias.Visibility = Visibility.Visible;
@@ -29,15 +31,9 @@ public partial class IncidenciasPage : Page
         };
     }
 
-    // "todas" | "mias" | "sinAsignar"
     private string _modo = "todas";
 
     private static readonly JsonSerializerOptions JsonOpts = new() { PropertyNameCaseInsensitive = true };
-
-    private static readonly System.Windows.Media.SolidColorBrush BrushActivo =
-        new(System.Windows.Media.Color.FromRgb(13, 110, 253));
-    private static readonly System.Windows.Media.SolidColorBrush BrushNormal =
-        new(System.Windows.Media.Color.FromRgb(33, 37, 41));
 
     private async Task CargarIncidencias()
     {
@@ -66,11 +62,13 @@ public partial class IncidenciasPage : Page
 
                 _todas = resultado?.Datos ?? new();
                 _totalPaginas = resultado?.TotalPaginas ?? 1;
+                _total = resultado?.Total ?? _todas.Count;
 
                 Dispatcher.Invoke(() =>
                 {
                     AplicarFiltro();
                     ActualizarPaginacion();
+                    TxtTotal.Text = $"{_total} incidencias en total";
                 });
             }
         }
@@ -82,8 +80,16 @@ public partial class IncidenciasPage : Page
 
     private void ActualizarBotonesModo()
     {
-        BtnMisIncidencias.Background  = _modo == "mias"       ? BrushActivo : BrushNormal;
-        BtnSinAsignar.Background      = _modo == "sinAsignar" ? BrushActivo : BrushNormal;
+        BtnMisIncidencias.Style = _modo == "mias"
+            ? (Style)Application.Current.FindResource("PrimaryBtn")
+            : (Style)Application.Current.FindResource("SecondaryBtn");
+        BtnSinAsignar.Style = _modo == "sinAsignar"
+            ? (Style)Application.Current.FindResource("PrimaryBtn")
+            : (Style)Application.Current.FindResource("SecondaryBtn");
+
+        // Restore small padding after style change
+        BtnMisIncidencias.Padding = new Thickness(10, 5, 10, 5);
+        BtnSinAsignar.Padding = new Thickness(10, 5, 10, 5);
     }
 
     private async void BtnMisIncidencias_Click(object sender, RoutedEventArgs e)
@@ -114,7 +120,7 @@ public partial class IncidenciasPage : Page
 
     private void ActualizarPaginacion()
     {
-        TxtPagina.Text = $"Página {_paginaActual} de {_totalPaginas}";
+        TxtPagina.Text = $"Pág {_paginaActual} / {_totalPaginas}";
         BtnAnterior.IsEnabled = _paginaActual > 1;
         BtnSiguiente.IsEnabled = _paginaActual < _totalPaginas;
     }
@@ -148,16 +154,6 @@ public partial class IncidenciasPage : Page
         }
     }
 
-    private void BtnLogout_Click(object sender, RoutedEventArgs e)
-    {
-        MainWindow.Token = string.Empty;
-        MainWindow.Rol = string.Empty;
-        MainWindow.Nombre = string.Empty;
-        MainWindow.ApiClient.DefaultRequestHeaders.Authorization = null;
-        var window = (MainWindow)Application.Current.MainWindow;
-        window.MainFrame.Navigate(new LoginPage());
-    }
-
     private void DgIncidencias_MouseDoubleClick(object sender, MouseButtonEventArgs e)
     {
         if (DgIncidencias.SelectedItem is IncidenciaItem incidencia)
@@ -178,6 +174,7 @@ public class IncidenciaItem
     public bool SlaExcedido { get; set; }
     public DateTime FechaCreacion { get; set; }
     public int? TecnicoAsignadoId { get; set; }
+    public string TecnicoNombre => TecnicoAsignadoId.HasValue ? "Asignada" : "Sin asignar";
 }
 
 public class PaginadoWpf<T>
