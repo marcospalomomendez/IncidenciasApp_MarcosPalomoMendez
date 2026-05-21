@@ -1,9 +1,11 @@
 using Api.Data;
 using Api.DTOs;
+using Api.Hubs;
 using Api.Models;
 using Api.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Shared;
 using System.Security.Claims;
@@ -17,11 +19,14 @@ public class IncidenciasController : ControllerBase
 {
     private readonly AppDbContext _context;
     private readonly IClasificadorService _clasificador;
+    private readonly IHubContext<IncidenciasHub> _hub;
 
-    public IncidenciasController(AppDbContext context, IClasificadorService clasificador)
+    public IncidenciasController(AppDbContext context, IClasificadorService clasificador,
+        IHubContext<IncidenciasHub> hub)
     {
         _context = context;
         _clasificador = clasificador;
+        _hub = hub;
     }
 
     private static bool EsSlaExcedido(Incidencia i)
@@ -57,6 +62,25 @@ public class IncidenciasController : ControllerBase
         if (string.IsNullOrWhiteSpace(q)) return query;
         var term = q.Trim();
         return query.Where(i => i.Titulo.Contains(term) || i.Descripcion.Contains(term));
+    }
+
+    private async Task RegistrarAuditoria(int incidenciaId, int usuarioId,
+        string campo, string? anterior, string? nuevo)
+    {
+        var nombre = await _context.Usuarios
+            .Where(u => u.Id == usuarioId)
+            .Select(u => u.Nombre)
+            .FirstOrDefaultAsync() ?? $"#{usuarioId}";
+
+        _context.Auditoria.Add(new AuditoriaEntry
+        {
+            IncidenciaId  = incidenciaId,
+            UsuarioId     = usuarioId,
+            UsuarioNombre = nombre,
+            Campo         = campo,
+            ValorAnterior = anterior,
+            ValorNuevo    = nuevo
+        });
     }
 
     // GET: api/Incidencias
@@ -149,6 +173,22 @@ public class IncidenciasController : ControllerBase
         });
     }
 
+    // GET: api/Incidencias/{id}/auditoria
+    [HttpGet("{id}/auditoria")]
+    public async Task<IActionResult> GetAuditoria(int id)
+    {
+        var entries = await _context.Auditoria
+            .Where(a => a.IncidenciaId == id)
+            .OrderByDescending(a => a.Fecha)
+            .Select(a => new
+            {
+                a.Id, a.Campo, a.ValorAnterior, a.ValorNuevo, a.UsuarioNombre, a.Fecha
+            })
+            .ToListAsync();
+
+        return Ok(entries);
+    }
+
     // POST: api/Incidencias
     [HttpPost]
     public async Task<IActionResult> Crear([FromBody] CrearIncidenciaDto dto)
@@ -156,20 +196,22 @@ public class IncidenciasController : ControllerBase
         var usuarioId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
         var incidencia = new Incidencia
         {
-            Titulo = dto.Titulo,
-            Descripcion = dto.Descripcion,
-            Prioridad = dto.Prioridad,
+            Titulo           = dto.Titulo,
+            Descripcion      = dto.Descripcion,
+            Prioridad        = dto.Prioridad,
             UsuarioCreadorId = usuarioId
         };
         _context.Incidencias.Add(incidencia);
         await _context.SaveChangesAsync();
 
         var clasificacion = await _clasificador.ClasificarAsync(dto.Titulo, dto.Descripcion);
-        incidencia.Categoria      = clasificacion?.Categoria ?? "Otro";
+        incidencia.Categoria       = clasificacion?.Categoria ?? "Otro";
         incidencia.JustificacionIA = clasificacion?.Justificacion;
         if (clasificacion?.Prioridad != null)
             incidencia.Prioridad = clasificacion.Prioridad;
-        await _context.SaveChangesAsync();
+
+        // Auditoría de creación
+        await RegistrarAuditoria(incidencia.Id, usuarioId, "Creación", null, incidencia.Estado);
 
         // Notificar a todos los admins y técnicos
         var destinatarios = await _context.Usuarios
@@ -185,6 +227,10 @@ public class IncidenciasController : ControllerBase
             IncidenciaId = incidencia.Id
         }));
         await _context.SaveChangesAsync();
+
+        // SignalR: avisar a admins y técnicos en tiempo real
+        await _hub.Clients.Group("admins-tecnicos")
+            .SendAsync("NuevaIncidencia", incidencia.Id, incidencia.Titulo, incidencia.Categoria);
 
         return Ok(MapIncidencia(incidencia));
     }
@@ -216,17 +262,40 @@ public class IncidenciasController : ControllerBase
             });
             incidencia.Estado = dto.Estado;
 
-            // Notificar al creador del cambio de estado
+            await RegistrarAuditoria(id, usuarioId, "Estado", estadoAnterior, dto.Estado);
+
+            // Notificación DB al creador
             _context.Notificaciones.Add(new Notificacion
             {
                 UsuarioId    = incidencia.UsuarioCreadorId,
                 Mensaje      = $"Tu incidencia #{id} cambió de estado: {estadoAnterior} → {dto.Estado}",
                 IncidenciaId = id
             });
+
+            // SignalR: avisar en tiempo real
+            await _hub.Clients.Group("admins-tecnicos")
+                .SendAsync("CambioEstado", id, dto.Estado);
+            await _hub.Clients.Group($"user-{incidencia.UsuarioCreadorId}")
+                .SendAsync("NuevaNotificacion", $"Incidencia #{id} → {dto.Estado}");
         }
 
-        if (dto.TecnicoAsignadoId.HasValue)
+        if (dto.TecnicoAsignadoId.HasValue && dto.TecnicoAsignadoId != incidencia.TecnicoAsignadoId)
+        {
+            var tecnicoNombre = await _context.Usuarios
+                .Where(u => u.Id == dto.TecnicoAsignadoId.Value)
+                .Select(u => u.Nombre)
+                .FirstOrDefaultAsync() ?? $"#{dto.TecnicoAsignadoId}";
+
+            await RegistrarAuditoria(id, usuarioId, "Técnico",
+                incidencia.TecnicoAsignadoId.HasValue ? "Anterior técnico" : "Sin asignar",
+                tecnicoNombre);
+
             incidencia.TecnicoAsignadoId = dto.TecnicoAsignadoId.Value;
+
+            // SignalR: avisar al técnico asignado
+            await _hub.Clients.Group($"user-{dto.TecnicoAsignadoId}")
+                .SendAsync("NuevaNotificacion", $"Se te asignó la incidencia #{id}: {incidencia.Titulo}");
+        }
 
         incidencia.FechaActualizacion = DateTime.UtcNow;
         await _context.SaveChangesAsync();
@@ -363,7 +432,6 @@ public class IncidenciasController : ControllerBase
             .Select(g => new { Prioridad = g.Key, Count = g.Count() })
             .ToListAsync();
 
-        // Tiempo medio de resolución — client-side por limitación de SQLite
         var resueltasData = await _context.Incidencias
             .Where(i => (i.Estado == Estados.Resuelta || i.Estado == Estados.Cerrada)
                         && i.FechaActualizacion != null)
@@ -380,7 +448,6 @@ public class IncidenciasController : ControllerBase
                 tiempoMedioHoras = Math.Round(tiempos.Average(), 1);
         }
 
-        // Tiempo medio por prioridad
         var tiempoMedioPorPrioridad = new Dictionary<string, double?>();
         foreach (var prio in new[] { "Critica", "Alta", "Media", "Baja" })
         {
@@ -507,11 +574,18 @@ public class IncidenciasController : ControllerBase
             IncidenciaId   = id
         });
 
+        var tecnicoNombre = await _context.Usuarios
+            .Where(u => u.Id == usuarioId)
+            .Select(u => u.Nombre)
+            .FirstOrDefaultAsync() ?? $"#{usuarioId}";
+
+        await RegistrarAuditoria(id, usuarioId, "Técnico", "Sin asignar", tecnicoNombre);
+        await RegistrarAuditoria(id, usuarioId, "Estado", incidencia.Estado, Estados.EnProceso);
+
         incidencia.TecnicoAsignadoId  = usuarioId;
         incidencia.Estado             = Estados.EnProceso;
         incidencia.FechaActualizacion = DateTime.UtcNow;
 
-        // Notificar al técnico que se le asignó la incidencia
         _context.Notificaciones.Add(new Notificacion
         {
             UsuarioId    = usuarioId,
@@ -520,6 +594,13 @@ public class IncidenciasController : ControllerBase
         });
 
         await _context.SaveChangesAsync();
+
+        // SignalR: avisar en tiempo real
+        await _hub.Clients.Group("admins-tecnicos")
+            .SendAsync("CambioEstado", id, Estados.EnProceso);
+        await _hub.Clients.Group($"user-{incidencia.UsuarioCreadorId}")
+            .SendAsync("NuevaNotificacion", $"Incidencia #{id} ha sido asignada y está en proceso");
+
         return Ok(MapIncidencia(incidencia));
     }
 
@@ -539,7 +620,7 @@ public class IncidenciasController : ControllerBase
         foreach (var inc in pendientes)
         {
             var clasificacion = await _clasificador.ClasificarAsync(inc.Titulo, inc.Descripcion);
-            inc.Categoria      = clasificacion?.Categoria ?? "Otro";
+            inc.Categoria       = clasificacion?.Categoria ?? "Otro";
             inc.JustificacionIA = clasificacion?.Justificacion;
             if (clasificacion?.Prioridad != null)
                 inc.Prioridad = clasificacion.Prioridad;

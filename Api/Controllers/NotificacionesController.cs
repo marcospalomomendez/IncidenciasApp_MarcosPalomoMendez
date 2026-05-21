@@ -38,29 +38,29 @@ public class NotificacionesController : ControllerBase
         });
     }
 
-    // PATCH: api/Notificaciones/{id}/leer
-    [HttpPatch("{id}/leer")]
-    public async Task<IActionResult> MarcarLeida(int id)
+    // DELETE: api/Notificaciones/{id}
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Eliminar(int id)
     {
         var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
         var n = await _context.Notificaciones
             .FirstOrDefaultAsync(n => n.Id == id && n.UsuarioId == userId);
         if (n == null) return NotFound();
-        n.Leida = true;
+        _context.Notificaciones.Remove(n);
         await _context.SaveChangesAsync();
         return Ok();
     }
 
-    // PATCH: api/Notificaciones/leer-todas
-    [HttpPatch("leer-todas")]
-    public async Task<IActionResult> MarcarTodasLeidas()
+    // DELETE: api/Notificaciones/todas
+    [HttpDelete("todas")]
+    public async Task<IActionResult> EliminarTodas()
     {
         var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
-        var pendientes = await _context.Notificaciones
-            .Where(n => n.UsuarioId == userId && !n.Leida)
+        var todas = await _context.Notificaciones
+            .Where(n => n.UsuarioId == userId)
             .ToListAsync();
-        pendientes.ForEach(n => n.Leida = true);
+        _context.Notificaciones.RemoveRange(todas);
         await _context.SaveChangesAsync();
-        return Ok(new { marcadas = pendientes.Count });
+        return Ok(new { eliminadas = todas.Count });
     }
 }

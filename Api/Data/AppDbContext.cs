@@ -12,6 +12,7 @@ public class AppDbContext : DbContext
     public DbSet<Comentario> Comentarios { get; set; }
     public DbSet<HistorialEstado> HistorialEstados { get; set; }
     public DbSet<Notificacion> Notificaciones { get; set; }
+    public DbSet<AuditoriaEntry> Auditoria { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -27,5 +28,11 @@ public class AppDbContext : DbContext
             .WithMany()
             .HasForeignKey(i => i.TecnicoAsignadoId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<AuditoriaEntry>()
+            .HasOne(a => a.Incidencia)
+            .WithMany()
+            .HasForeignKey(a => a.IncidenciaId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }
