@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] — Gestión de Incidencias</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
     @inject Microsoft.Extensions.Configuration.IConfiguration _cfg
     <style>
         *, *::before, *::after { box-sizing: border-box; }
@@ -132,37 +133,37 @@
             @if (rol == "Admin")
             {
                 <a href="/Admin/Index" class="sidebar-link @(path == "/Admin/Index" || path == "/Admin" ? "active" : "")">
-                    <span class="icon">⌂</span> Dashboard
+                    <i class="bi bi-house icon"></i> Dashboard
                 </a>
                 <a href="/Admin/Incidencias" class="sidebar-link @(path.StartsWith("/Admin/Incidencias") ? "active" : "")">
-                    <span class="icon">≡</span> Incidencias
+                    <i class="bi bi-list icon"></i> Incidencias
                 </a>
                 <a href="/Admin/Usuarios" class="sidebar-link @(path.StartsWith("/Admin/Usuarios") ? "active" : "")">
-                    <span class="icon">👥</span> Usuarios
+                    <i class="bi bi-people icon"></i> Usuarios
                 </a>
                 <a href="/Admin/Asistente" class="sidebar-link @(path.StartsWith("/Admin/Asistente") ? "active" : "")">
-                    <span class="icon">🤖</span> Asistente
+                    <i class="bi bi-robot icon"></i> Asistente
                 </a>
             }
             else if (rol == "Tecnico")
             {
                 <a href="/Tecnico/Index" class="sidebar-link @(path.StartsWith("/Tecnico/Index") || path == "/Tecnico" ? "active" : "")">
-                    <span class="icon">≡</span> Incidencias
+                    <i class="bi bi-list icon"></i> Incidencias
                 </a>
             }
             else
             {
                 <a href="/Usuario/Index" class="sidebar-link @(path.StartsWith("/Usuario/Index") || path == "/Usuario" ? "active" : "")">
-                    <span class="icon">≡</span> Mis Incidencias
+                    <i class="bi bi-list icon"></i> Mis Incidencias
                 </a>
                 <a href="/Usuario/Crear" class="sidebar-link @(path.StartsWith("/Usuario/Crear") ? "active" : "")">
-                    <span class="icon">＋</span> Nueva Incidencia
+                    <i class="bi bi-plus icon"></i> Nueva Incidencia
                 </a>
             }
 
             <a href="/Notificaciones" id="notifLink"
                class="sidebar-link @(path.StartsWith("/Notificaciones") ? "active" : "")">
-                <span class="icon">🔔</span>
+                <i class="bi bi-bell icon"></i>
                 Notificaciones
                 <span id="notifBadge"
                       class="badge bg-danger rounded-pill ms-auto"
@@ -228,7 +229,7 @@
                 font-size:13px;box-shadow:0 4px 16px rgba(0,0,0,.25);pointer-events:auto;
                 display:flex;align-items:center;gap:10px;
                 animation:toastIn .25s ease`;
-            el.innerHTML = `<span>🔔</span><span style="flex:1">${msg}</span>
+            el.innerHTML = `<span style="flex:1">${msg}</span>
                 <span onclick="this.parentElement.remove()" style="cursor:pointer;opacity:.7">✕</span>`;
             document.getElementById('toastContainer').appendChild(el);
             setTimeout(() => el.remove(), 6000);

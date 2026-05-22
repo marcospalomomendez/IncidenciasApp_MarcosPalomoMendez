@@ -9,7 +9,7 @@
     <!-- Header -->
     <div class="d-flex align-items-center gap-3 mb-4">
         <div style="width:52px;height:52px;background:#0D6EFD;border-radius:14px;
-                    display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0">🤖</div>
+                    display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:white;flex-shrink:0">IA</div>
         <div>
             <h4 class="mb-0" style="color:#161D35;font-weight:700">Asistente de Consultas</h4>
             <span class="text-muted" style="font-size:13px">Haz clic en una pregunta para obtener información en tiempo real</span>
@@ -24,7 +24,6 @@
         @if (!Model.Historial.Any())
         {
             <div class="text-center text-muted" style="margin:auto;font-size:14px;padding:40px 0">
-                <div style="font-size:48px;margin-bottom:10px;opacity:.35">💬</div>
                 <div>Selecciona una pregunta de abajo para empezar</div>
             </div>
         }
@@ -39,9 +38,9 @@
             </div>
             <!-- Bot bubble -->
             <div class="d-flex align-items-start gap-2">
-                <div style="width:34px;height:34px;background:#F0F2F5;border-radius:50%;
+                <div style="width:34px;height:34px;background:#0D6EFD;border-radius:50%;
                             display:flex;align-items:center;justify-content:center;
-                            font-size:17px;flex-shrink:0;margin-top:2px">🤖</div>
+                            font-size:11px;font-weight:700;color:white;flex-shrink:0;margin-top:2px">IA</div>
                 <div style="background:#F0F2F5;border-radius:4px 16px 16px 16px;
                             padding:10px 15px;max-width:76%;font-size:14px;line-height:1.6;color:#1a1a2e">
                     @Html.Raw(Model.FormatearRespuesta(respuesta))
@@ -59,7 +58,7 @@
 
             <!-- Técnicos -->
             <div class="mb-3">
-                <span class="badge mb-2" style="background:#161D35;font-size:11px">👨‍💻 Técnicos</span>
+                <span class="badge mb-2" style="background:#161D35;font-size:11px">Técnicos</span>
                 <div class="d-flex flex-wrap gap-2">
                     <form method="post">
                         <input type="hidden" name="tipo" value="tecnico-mas-activas" />
@@ -91,7 +90,7 @@
 
             <!-- Incidencias -->
             <div class="mb-3">
-                <span class="badge mb-2" style="background:#198754;font-size:11px">📋 Incidencias</span>
+                <span class="badge mb-2" style="background:#198754;font-size:11px">Incidencias</span>
                 <div class="d-flex flex-wrap gap-2">
                     <form method="post">
                         <input type="hidden" name="tipo" value="categoria-mas-incidencias" />
@@ -116,7 +115,7 @@
 
             <!-- SLA y tiempos -->
             <div class="mb-3">
-                <span class="badge mb-2" style="background:#DC3545;font-size:11px">⏱ SLA y Tiempos</span>
+                <span class="badge mb-2" style="background:#DC3545;font-size:11px">SLA y Tiempos</span>
                 <div class="d-flex flex-wrap gap-2">
                     <form method="post">
                         <input type="hidden" name="tipo" value="sla-excedido" />
@@ -140,7 +139,7 @@
                     <form method="post">
                         <input type="hidden" name="tipo" value="limpiar" />
                         <button type="submit" class="btn btn-link text-muted btn-sm p-0" style="font-size:13px">
-                            🗑 Limpiar conversación
+                            Limpiar conversación
                         </button>
                     </form>
                 </div>

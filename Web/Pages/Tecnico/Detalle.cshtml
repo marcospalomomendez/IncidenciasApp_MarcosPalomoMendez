@@ -69,7 +69,7 @@
                                     <input type="hidden" name="id" value="@Model.Incidencia.Id" />
                                     <input type="hidden" name="returnUrl" value="@Model.ReturnUrl" />
                                     <button type="submit" class="btn btn-outline-secondary btn-sm">
-                                        🔔 Cancelar seguimiento
+                                        <i class="bi bi-bell-slash me-1"></i>Cancelar seguimiento
                                     </button>
                                 </form>
                             }
@@ -79,7 +79,7 @@
                                     <input type="hidden" name="id" value="@Model.Incidencia.Id" />
                                     <input type="hidden" name="returnUrl" value="@Model.ReturnUrl" />
                                     <button type="submit" class="btn btn-outline-primary btn-sm">
-                                        🔔 Seguir incidencia
+                                        <i class="bi bi-bell me-1"></i>Seguir incidencia
                                     </button>
                                 </form>
                             }
@@ -127,8 +127,8 @@
 
             <div class="col-md-4">
                 <div class="card">
-                    <div class="card-header bg-dark text-white d-flex align-items-center gap-2">
-                        <span>📋</span> Auditoría
+                    <div class="card-header bg-dark text-white">
+                        Auditoría
                     </div>
                     <div class="card-body p-3">
                         @if (!Model.Auditoria.Any())

@@ -9,7 +9,7 @@
         @if (Model.Notificaciones.Any())
         {
             <form method="post" asp-page-handler="LeerTodas">
-                <button type="submit" class="btn btn-sm btn-outline-secondary">🗑 Borrar todas</button>
+                <button type="submit" class="btn btn-sm btn-outline-secondary">Borrar todas</button>
             </form>
         }
     </div>
@@ -39,7 +39,7 @@
                         }
                         <form method="post" asp-page-handler="Leer">
                             <input type="hidden" name="id" value="@n.Id" />
-                            <button type="submit" class="btn btn-sm btn-outline-danger" title="Eliminar">🗑</button>
+                            <button type="submit" class="btn btn-sm btn-outline-danger" title="Eliminar">X</button>
                         </form>
                     </div>
                 </div>
