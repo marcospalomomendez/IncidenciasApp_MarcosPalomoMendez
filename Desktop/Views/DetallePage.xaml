@@ -96,6 +96,36 @@
                                 Padding="10,8" HorizontalAlignment="Stretch"
                                 Visibility="Collapsed"
                                 Click="BtnAsignarTecnico_Click"/>
+
+                        <!-- Suscripción -->
+                        <Separator Margin="0,12,0,12" Background="#E5E7EB"/>
+                        <Button x:Name="BtnSuscribir"
+                                Padding="10,8" HorizontalAlignment="Stretch"
+                                Click="BtnSuscribir_Click">
+                            <Button.Style>
+                                <Style TargetType="Button">
+                                    <Setter Property="Background" Value="#EFF6FF"/>
+                                    <Setter Property="Foreground" Value="#1D4ED8"/>
+                                    <Setter Property="BorderBrush" Value="#BFDBFE"/>
+                                    <Setter Property="BorderThickness" Value="1"/>
+                                    <Setter Property="FontSize" Value="13"/>
+                                    <Setter Property="FontWeight" Value="SemiBold"/>
+                                    <Setter Property="Cursor" Value="Hand"/>
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="Button">
+                                                <Border Background="{TemplateBinding Background}"
+                                                        BorderBrush="{TemplateBinding BorderBrush}"
+                                                        BorderThickness="{TemplateBinding BorderThickness}"
+                                                        CornerRadius="6" Padding="{TemplateBinding Padding}">
+                                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                </Border>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </Button.Style>
+                        </Button>
                     </StackPanel>
                 </Border>
             </Grid>

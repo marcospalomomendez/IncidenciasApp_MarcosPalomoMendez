@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using Shared;
 using Web.Models;
 
@@ -13,6 +14,7 @@ public class DetalleModel : PageModel
     private readonly IHttpClientFactory _httpClientFactory;
     public IncidenciaDetalleModel? Incidencia { get; set; }
     public List<AuditoriaEntryModel> Auditoria { get; set; } = new();
+    public bool EsSuscrito { get; set; }
     public string ReturnUrl { get; set; } = "/Tecnico/Index";
 
     public DetalleModel(IHttpClientFactory httpClientFactory)
@@ -54,7 +56,27 @@ public class DetalleModel : PageModel
                 new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? new();
         }
 
+        var resSuscrito = await client.GetAsync($"/api/Incidencias/{id}/suscrito");
+        if (resSuscrito.IsSuccessStatusCode)
+        {
+            var jsonS = await resSuscrito.Content.ReadAsStringAsync();
+            var obj = JsonSerializer.Deserialize<JsonElement>(jsonS);
+            EsSuscrito = obj.GetProperty("suscrito").GetBoolean();
+        }
+
         return Page();
+    }
+
+    public async Task<IActionResult> OnPostSuscribirAsync(int id, string returnUrl = "")
+    {
+        await GetClient().PostAsync($"/api/Incidencias/{id}/suscribir", null);
+        return RedirectToPage(new { id, returnUrl });
+    }
+
+    public async Task<IActionResult> OnPostDesuscribirAsync(int id, string returnUrl = "")
+    {
+        await GetClient().DeleteAsync($"/api/Incidencias/{id}/suscribir");
+        return RedirectToPage(new { id, returnUrl });
     }
 
     public async Task<IActionResult> OnPostAsignarAsync(int id, string returnUrl = "")

@@ -9,6 +9,52 @@
         <span class="text-muted">@Model.Total incidencias</span>
     </div>
 
+    <!-- Stats personales -->
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-md-3">
+            <div class="card border-0 h-100" style="background:#161D35;color:white">
+                <div class="card-body text-center py-3">
+                    <div style="font-size:2rem;font-weight:800">@Model.StatsActivas</div>
+                    <div style="font-size:12px;color:#8899B4;margin-top:2px">Activas asignadas</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card border-0 h-100" style="background:#198754;color:white">
+                <div class="card-body text-center py-3">
+                    <div style="font-size:2rem;font-weight:800">@Model.StatsResueltasSemana</div>
+                    <div style="font-size:12px;color:rgba(255,255,255,.75);margin-top:2px">Resueltas esta semana</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card border-0 h-100" style="background:#0D6EFD;color:white">
+                <div class="card-body text-center py-3">
+                    <div style="font-size:2rem;font-weight:800">
+                        @(Model.StatsTiempoMedio.HasValue ? $"{Model.StatsTiempoMedio.Value} h" : "—")
+                    </div>
+                    <div style="font-size:12px;color:rgba(255,255,255,.75);margin-top:2px">Tiempo medio resolución</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            @{
+                var slaColor = Model.StatsSlaPct.HasValue
+                    ? (Model.StatsSlaPct.Value >= 80 ? "#198754" : Model.StatsSlaPct.Value >= 50 ? "#FFC107" : "#DC3545")
+                    : "#6C757D";
+                var slaText  = Model.StatsSlaPct.HasValue ? "#fff" : "#fff";
+            }
+            <div class="card border-0 h-100" style="background:@slaColor;color:@slaText">
+                <div class="card-body text-center py-3">
+                    <div style="font-size:2rem;font-weight:800">
+                        @(Model.StatsSlaPct.HasValue ? $"{Model.StatsSlaPct.Value} %" : "—")
+                    </div>
+                    <div style="font-size:12px;color:rgba(255,255,255,.75);margin-top:2px">SLA cumplido</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Filtros -->
     <form method="get" class="row g-2 align-items-end mb-4">
         <div class="col-auto">

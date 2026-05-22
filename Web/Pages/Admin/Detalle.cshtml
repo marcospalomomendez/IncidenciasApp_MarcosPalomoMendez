@@ -69,6 +69,28 @@
                             </div>
                         </form>
 
+                        <div class="mt-1 mb-3">
+                            @if (Model.EsSuscrito)
+                            {
+                                <form method="post" asp-page-handler="Desuscribir" class="d-inline">
+                                    <input type="hidden" name="id" value="@Model.Incidencia.Id" />
+                                    <input type="hidden" name="returnUrl" value="@Model.ReturnUrl" />
+                                    <button type="submit" class="btn btn-outline-secondary btn-sm">
+                                        🔔 Cancelar seguimiento
+                                    </button>
+                                </form>
+                            }
+                            else
+                            {
+                                <form method="post" asp-page-handler="Suscribir" class="d-inline">
+                                    <input type="hidden" name="id" value="@Model.Incidencia.Id" />
+                                    <input type="hidden" name="returnUrl" value="@Model.ReturnUrl" />
+                                    <button type="submit" class="btn btn-outline-primary btn-sm">
+                                        🔔 Seguir incidencia
+                                    </button>
+                                </form>
+                            }
+                        </div>
                         <hr />
                         <small class="text-muted">
                             Creada: @Model.Incidencia.FechaCreacion.ToString("dd/MM/yyyy HH:mm")

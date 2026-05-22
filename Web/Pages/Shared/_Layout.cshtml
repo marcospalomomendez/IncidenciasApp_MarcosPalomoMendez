@@ -47,10 +47,10 @@
             flex-shrink: 0;
         }
         .sidebar-logo-name  { color: white; font-size: 15px; font-weight: 700; line-height: 1.2; }
-        .sidebar-logo-sub   { color: #445070; font-size: 10px; }
+        .sidebar-logo-sub   { color: #8994b3; font-size: 10px; }
 
         .sidebar-section {
-            color: #334060;
+            color: #8994b3;
             font-size: 9px;
             font-weight: 700;
             text-transform: uppercase;
@@ -139,6 +139,9 @@
                 </a>
                 <a href="/Admin/Usuarios" class="sidebar-link @(path.StartsWith("/Admin/Usuarios") ? "active" : "")">
                     <span class="icon">👥</span> Usuarios
+                </a>
+                <a href="/Admin/Asistente" class="sidebar-link @(path.StartsWith("/Admin/Asistente") ? "active" : "")">
+                    <span class="icon">🤖</span> Asistente
                 </a>
             }
             else if (rol == "Tecnico")

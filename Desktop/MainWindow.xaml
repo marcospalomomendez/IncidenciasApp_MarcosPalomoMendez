@@ -29,14 +29,14 @@
                     </Border>
                     <StackPanel VerticalAlignment="Center">
                         <TextBlock Text="Incidencias" Foreground="White" FontSize="15" FontWeight="Bold"/>
-                        <TextBlock Text="Panel de gestión" Foreground="#445070" FontSize="10"/>
+                        <TextBlock Text="Panel de gestión" Foreground="#8994b3" FontSize="10"/>
                     </StackPanel>
                 </StackPanel>
             </Border>
 
             <!-- Navigation -->
             <StackPanel Grid.Row="1" Margin="0,18,0,0">
-                <TextBlock Text="NAVEGACIÓN" Foreground="#334060" FontSize="9" FontWeight="Bold"
+                <TextBlock Text="NAVEGACIÓN" Foreground="#8994b3" FontSize="9" FontWeight="Bold"
                            Margin="20,0,0,10"/>
                 <Button x:Name="BtnNavDashboard"
                         Style="{StaticResource NavBtn}"

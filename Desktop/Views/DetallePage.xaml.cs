@@ -13,6 +13,7 @@ public partial class DetallePage : Page
     private static readonly JsonSerializerOptions JsonOpts = new() { PropertyNameCaseInsensitive = true };
 
     private readonly int _incidenciaId;
+    private bool _esSuscrito;
 
     public DetallePage(int id)
     {
@@ -115,6 +116,7 @@ public partial class DetallePage : Page
                 await CargarTecnicos();
 
             await CargarAuditoria();
+            await CargarSuscripcion();
         }
         catch (Exception ex)
         {
@@ -224,6 +226,50 @@ public partial class DetallePage : Page
             Dispatcher.Invoke(() => LstAuditoria.ItemsSource = entries);
         }
         catch { /* no crítico */ }
+    }
+
+    private async Task CargarSuscripcion()
+    {
+        try
+        {
+            var response = await MainWindow.ApiClient.GetAsync($"/api/Incidencias/{_incidenciaId}/suscrito");
+            if (!response.IsSuccessStatusCode) return;
+
+            var json = await response.Content.ReadAsStringAsync();
+            var obj = JsonSerializer.Deserialize<JsonElement>(json, JsonOpts);
+            _esSuscrito = obj.GetProperty("suscrito").GetBoolean();
+
+            Dispatcher.Invoke(ActualizarBtnSuscribir);
+        }
+        catch { /* no crítico */ }
+    }
+
+    private void ActualizarBtnSuscribir()
+    {
+        BtnSuscribir.Content = _esSuscrito ? "🔔 Cancelar seguimiento" : "🔔 Seguir incidencia";
+        var bg = _esSuscrito ? "#F0F0F0" : "#EFF6FF";
+        var fg = _esSuscrito ? "#6B7280" : "#1D4ED8";
+        BtnSuscribir.Background = new SolidColorBrush(
+            (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(bg));
+        BtnSuscribir.Foreground = new SolidColorBrush(
+            (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(fg));
+    }
+
+    private async void BtnSuscribir_Click(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            if (_esSuscrito)
+                await MainWindow.ApiClient.DeleteAsync($"/api/Incidencias/{_incidenciaId}/suscribir");
+            else
+                await MainWindow.ApiClient.PostAsync($"/api/Incidencias/{_incidenciaId}/suscribir", null);
+
+            await CargarSuscripcion();
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Error al cambiar suscripción: {ex.Message}");
+        }
     }
 
     private void BtnVolver_Click(object sender, RoutedEventArgs e)

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using Shared;
 using Web.Models;
 
@@ -12,6 +13,10 @@ public class IndexModel : PageModel
 {
     private readonly IHttpClientFactory _httpClientFactory;
     public List<IncidenciaModel> Incidencias { get; set; } = new();
+    public int    StatsActivas           { get; set; }
+    public int    StatsResueltasSemana   { get; set; }
+    public double? StatsTiempoMedio      { get; set; }
+    public double? StatsSlaPct           { get; set; }
     public int PaginaActual  { get; set; } = 1;
     public int TotalPaginas  { get; set; } = 1;
     public int Total         { get; set; } = 0;
@@ -75,6 +80,20 @@ public class IndexModel : PageModel
         if (sinAsignar) url += "&soloSinAsignar=true";
         if (mias)       url += "&soloAsignadas=true";
         if (!string.IsNullOrEmpty(q)) url += $"&q={Uri.EscapeDataString(q)}";
+
+        var statsRes = await client.GetAsync("/api/Incidencias/mis-stats");
+        if (statsRes.IsSuccessStatusCode)
+        {
+            var js = await statsRes.Content.ReadAsStringAsync();
+            var s  = JsonSerializer.Deserialize<JsonElement>(js,
+                new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            StatsActivas         = s.GetProperty("activasAsignadas").GetInt32();
+            StatsResueltasSemana = s.GetProperty("resueltasEstaSemana").GetInt32();
+            if (s.TryGetProperty("tiempoMedioHoras", out var th) && th.ValueKind != JsonValueKind.Null)
+                StatsTiempoMedio = th.GetDouble();
+            if (s.TryGetProperty("slaCumplidoPct", out var sp) && sp.ValueKind != JsonValueKind.Null)
+                StatsSlaPct = sp.GetDouble();
+        }
 
         var response = await client.GetAsync(url);
         if (response.IsSuccessStatusCode)
