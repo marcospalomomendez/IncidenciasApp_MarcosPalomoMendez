@@ -99,6 +99,7 @@ builder.Services.AddHttpClient("Groq", (sp, client) =>
         client.DefaultRequestHeaders.Add("Authorization", $"Bearer {key}");
 });
 builder.Services.AddScoped<IClasificadorService, ClasificadorService>();
+builder.Services.AddScoped<IEmailService, EmailService>();
 
 var app = builder.Build();
 

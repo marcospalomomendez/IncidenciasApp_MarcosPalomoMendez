@@ -13,6 +13,7 @@ public class AppDbContext : DbContext
     public DbSet<HistorialEstado> HistorialEstados { get; set; }
     public DbSet<Notificacion> Notificaciones { get; set; }
     public DbSet<AuditoriaEntry> Auditoria { get; set; }
+    public DbSet<SuscripcionIncidencia> Suscripciones { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -33,6 +34,22 @@ public class AppDbContext : DbContext
             .HasOne(a => a.Incidencia)
             .WithMany()
             .HasForeignKey(a => a.IncidenciaId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<SuscripcionIncidencia>()
+            .HasIndex(s => new { s.UsuarioId, s.IncidenciaId })
+            .IsUnique();
+
+        modelBuilder.Entity<SuscripcionIncidencia>()
+            .HasOne(s => s.Incidencia)
+            .WithMany()
+            .HasForeignKey(s => s.IncidenciaId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<SuscripcionIncidencia>()
+            .HasOne(s => s.Usuario)
+            .WithMany()
+            .HasForeignKey(s => s.UsuarioId)
             .OnDelete(DeleteBehavior.Cascade);
     }
 }

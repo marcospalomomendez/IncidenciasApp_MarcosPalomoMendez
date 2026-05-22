@@ -1,4 +1,4 @@
-using Api.Data;
+﻿using Api.Data;
 using Api.DTOs;
 using Api.Hubs;
 using Api.Models;
@@ -20,13 +20,15 @@ public class IncidenciasController : ControllerBase
     private readonly AppDbContext _context;
     private readonly IClasificadorService _clasificador;
     private readonly IHubContext<IncidenciasHub> _hub;
+    private readonly IEmailService _email;
 
     public IncidenciasController(AppDbContext context, IClasificadorService clasificador,
-        IHubContext<IncidenciasHub> hub)
+        IHubContext<IncidenciasHub> hub, IEmailService email)
     {
         _context = context;
         _clasificador = clasificador;
         _hub = hub;
+        _email = email;
     }
 
     private static bool EsSlaExcedido(Incidencia i)
@@ -43,7 +45,7 @@ public class IncidenciasController : ControllerBase
     }
 
     private static object MapIncidencia(Incidencia i) => new
-    {
+    { 
         i.Id,
         i.Titulo,
         i.Estado,
@@ -62,6 +64,26 @@ public class IncidenciasController : ControllerBase
         if (string.IsNullOrWhiteSpace(q)) return query;
         var term = q.Trim();
         return query.Where(i => i.Titulo.Contains(term) || i.Descripcion.Contains(term));
+    }
+
+    private async Task NotificarSuscriptoresAsync(int incidenciaId, int exceptoUsuarioId, string mensaje)
+    {
+        var suscriptores = await _context.Suscripciones
+            .Where(s => s.IncidenciaId == incidenciaId && s.UsuarioId != exceptoUsuarioId)
+            .Select(s => s.UsuarioId)
+            .ToListAsync();
+
+        foreach (var uid in suscriptores)
+        {
+            _context.Notificaciones.Add(new Notificacion
+            {
+                UsuarioId    = uid,
+                Mensaje      = mensaje,
+                IncidenciaId = incidenciaId
+            });
+            await _hub.Clients.Group($"user-{uid}")
+                .SendAsync("NuevaNotificacion", mensaje);
+        }
     }
 
     private async Task RegistrarAuditoria(int incidenciaId, int usuarioId,
@@ -272,6 +294,37 @@ public class IncidenciasController : ControllerBase
                 IncidenciaId = id
             });
 
+            // Notificar a suscriptores del cambio de estado
+            await NotificarSuscriptoresAsync(id, usuarioId,
+                $"[Seguimiento] Incidencia #{id} cambió a {dto.Estado}: {incidencia.Titulo}");
+
+            // Si se marca como Resuelta, notificar a todos los admins para que la cierren
+            if (dto.Estado == Estados.Resuelta)
+            {
+                var admins = await _context.Usuarios
+                    .Where(u => u.Rol == Roles.Admin)
+                    .Select(u => u.Id)
+                    .ToListAsync();
+
+                var tecnicoNombreResolucion = await _context.Usuarios
+                    .Where(u => u.Id == usuarioId)
+                    .Select(u => u.Nombre)
+                    .FirstOrDefaultAsync() ?? $"#{usuarioId}";
+
+                foreach (var adminId in admins)
+                {
+                    _context.Notificaciones.Add(new Notificacion
+                    {
+                        UsuarioId    = adminId,
+                        Mensaje      = $"✅ Incidencia #{id} marcada como resuelta por {tecnicoNombreResolucion} — pendiente de cierre: {incidencia.Titulo}",
+                        IncidenciaId = id
+                    });
+                    await _hub.Clients.Group($"user-{adminId}")
+                        .SendAsync("NuevaNotificacion",
+                            $"✅ Incidencia #{id} resuelta por {tecnicoNombreResolucion} — pendiente de cierre");
+                }
+            }
+
             // SignalR: avisar en tiempo real
             await _hub.Clients.Group("admins-tecnicos")
                 .SendAsync("CambioEstado", id, dto.Estado);
@@ -291,6 +344,16 @@ public class IncidenciasController : ControllerBase
                 tecnicoNombre);
 
             incidencia.TecnicoAsignadoId = dto.TecnicoAsignadoId.Value;
+
+            // Email al nuevo técnico asignado
+            var tecnicoEmailActualizar = await _context.Usuarios
+                .Where(u => u.Id == dto.TecnicoAsignadoId.Value)
+                .Select(u => u.Email)
+                .FirstOrDefaultAsync();
+            if (!string.IsNullOrEmpty(tecnicoEmailActualizar))
+                await _email.EnviarAsignacionAsync(tecnicoEmailActualizar, tecnicoNombre,
+                    id, incidencia.Titulo, incidencia.Descripcion,
+                    incidencia.Prioridad, incidencia.Categoria);
 
             // SignalR: avisar al técnico asignado
             await _hub.Clients.Group($"user-{dto.TecnicoAsignadoId}")
@@ -414,6 +477,194 @@ public class IncidenciasController : ControllerBase
             totalPaginas = (int)Math.Ceiling((double)total / tamanio),
             datos = incidencias.Select(MapIncidencia)
         });
+    }
+
+    // GET: api/Incidencias/mis-stats
+    [HttpGet("mis-stats")]
+    [Authorize(Roles = "Tecnico,Admin")]
+    public async Task<IActionResult> GetMisStats()
+    {
+        var usuarioId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        var ahora = DateTime.UtcNow;
+
+        var mis = await _context.Incidencias
+            .Where(i => i.TecnicoAsignadoId == usuarioId)
+            .ToListAsync();
+
+        var activasAsignadas = mis.Count(i =>
+            i.Estado == Estados.Abierta || i.Estado == Estados.EnProceso);
+
+        var hace7dias = ahora.AddDays(-7);
+        var resueltasEstaSemana = mis.Count(i =>
+            (i.Estado == Estados.Resuelta || i.Estado == Estados.Cerrada) &&
+            i.FechaActualizacion.HasValue && i.FechaActualizacion.Value >= hace7dias);
+
+        var resueltas = mis
+            .Where(i => (i.Estado == Estados.Resuelta || i.Estado == Estados.Cerrada)
+                        && i.FechaActualizacion.HasValue)
+            .ToList();
+
+        double? tiempoMedioHoras = null;
+        if (resueltas.Any())
+        {
+            var tiempos = resueltas
+                .Select(i => (i.FechaActualizacion!.Value - i.FechaCreacion).TotalHours)
+                .Where(h => h > 0).ToList();
+            if (tiempos.Any())
+                tiempoMedioHoras = Math.Round(tiempos.Average(), 1);
+        }
+
+        double? slaCumplidoPct = null;
+        if (resueltas.Any())
+        {
+            var cumplidos = resueltas.Count(i =>
+            {
+                var limite = i.Prioridad switch
+                {
+                    "Critica" => 2.0, "Alta" => 8.0, "Media" => 24.0, _ => 72.0
+                };
+                return (i.FechaActualizacion!.Value - i.FechaCreacion).TotalHours <= limite;
+            });
+            slaCumplidoPct = Math.Round((double)cumplidos / resueltas.Count * 100, 1);
+        }
+
+        return Ok(new
+        {
+            activasAsignadas,
+            resueltasEstaSemana,
+            tiempoMedioHoras,
+            slaCumplidoPct,
+            totalResueltas = resueltas.Count
+        });
+    }
+
+    // GET: api/Incidencias/consulta
+    [HttpGet("consulta")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> Consulta(string tipo, string? categoria = null)
+    {
+        var ahora = DateTime.UtcNow;
+
+        string respuesta = tipo switch
+        {
+            "tecnico-mas-activas" => await TecnicoMasActivasAsync(),
+            "tecnico-mas-resueltas" => await TecnicoMasResueltasAsync(null),
+            "tecnico-mas-resueltas-categoria" => await TecnicoMasResueltasAsync(categoria),
+            "categoria-mas-incidencias" => await CategoriaMasIncidenciasAsync(),
+            "sla-excedido" => await SlaExcedidoAsync(ahora),
+            "tiempo-medio" => await TiempoMedioAsync(),
+            "resumen-estados" => await ResumenEstadosAsync(),
+            "sin-asignar" => await SinAsignarAsync(),
+            _ => "Consulta no reconocida."
+        };
+
+        return Ok(new { respuesta });
+    }
+
+    private async Task<string> TecnicoMasActivasAsync()
+    {
+        var grupo = await _context.Incidencias
+            .Where(i => i.TecnicoAsignadoId != null &&
+                        (i.Estado == Estados.Abierta || i.Estado == Estados.EnProceso))
+            .GroupBy(i => i.TecnicoAsignadoId!.Value)
+            .Select(g => new { Id = g.Key, Total = g.Count() })
+            .OrderByDescending(g => g.Total)
+            .FirstOrDefaultAsync();
+
+        if (grupo == null) return "No hay incidencias activas asignadas actualmente.";
+        var nombre = await _context.Usuarios.Where(u => u.Id == grupo.Id).Select(u => u.Nombre).FirstOrDefaultAsync();
+        return $"El técnico con más incidencias activas es **{nombre}** con {grupo.Total} incidencia{(grupo.Total == 1 ? "" : "s")}.";
+    }
+
+    private async Task<string> TecnicoMasResueltasAsync(string? categoria)
+    {
+        var query = _context.Incidencias
+            .Where(i => i.TecnicoAsignadoId != null &&
+                        (i.Estado == Estados.Resuelta || i.Estado == Estados.Cerrada));
+        if (!string.IsNullOrEmpty(categoria))
+            query = query.Where(i => i.Categoria == categoria);
+
+        var grupo = await query
+            .GroupBy(i => i.TecnicoAsignadoId!.Value)
+            .Select(g => new { Id = g.Key, Total = g.Count() })
+            .OrderByDescending(g => g.Total)
+            .FirstOrDefaultAsync();
+
+        if (grupo == null)
+            return categoria != null
+                ? $"No hay incidencias resueltas en la categoría {categoria}."
+                : "No hay incidencias resueltas aún.";
+
+        var nombre = await _context.Usuarios.Where(u => u.Id == grupo.Id).Select(u => u.Nombre).FirstOrDefaultAsync();
+        var sufijo = categoria != null ? $" en la categoría **{categoria}**" : "";
+        return $"El técnico con más incidencias resueltas{sufijo} es **{nombre}** con {grupo.Total} incidencia{(grupo.Total == 1 ? "" : "s")}.";
+    }
+
+    private async Task<string> CategoriaMasIncidenciasAsync()
+    {
+        var grupo = await _context.Incidencias
+            .Where(i => i.Categoria != null)
+            .GroupBy(i => i.Categoria!)
+            .Select(g => new { Categoria = g.Key, Total = g.Count() })
+            .OrderByDescending(g => g.Total)
+            .FirstOrDefaultAsync();
+
+        if (grupo == null) return "No hay incidencias clasificadas aún.";
+        return $"La categoría con más incidencias es **{grupo.Categoria}** con {grupo.Total} incidencia{(grupo.Total == 1 ? "" : "s")}.";
+    }
+
+    private async Task<string> SlaExcedidoAsync(DateTime ahora)
+    {
+        var abiertas = await _context.Incidencias
+            .Where(i => i.Estado != Estados.Resuelta && i.Estado != Estados.Cerrada)
+            .ToListAsync();
+
+        var excedidas = abiertas.Count(i =>
+        {
+            var limite = i.Prioridad switch
+            {
+                "Critica" => 2.0, "Alta" => 8.0, "Media" => 24.0, _ => 72.0
+            };
+            return (ahora - i.FechaCreacion).TotalHours > limite;
+        });
+
+        if (excedidas == 0) return "Ninguna incidencia activa supera su SLA en este momento.";
+        return $"Hay **{excedidas}** incidencia{(excedidas == 1 ? "" : "s")} con el SLA excedido de un total de {abiertas.Count} activas.";
+    }
+
+    private async Task<string> TiempoMedioAsync()
+    {
+        var resueltas = await _context.Incidencias
+            .Where(i => (i.Estado == Estados.Resuelta || i.Estado == Estados.Cerrada)
+                        && i.FechaActualizacion != null)
+            .Select(i => new { i.FechaCreacion, Actualizada = i.FechaActualizacion!.Value })
+            .ToListAsync();
+
+        if (!resueltas.Any()) return "No hay incidencias resueltas aún para calcular el tiempo medio.";
+        var tiempos = resueltas.Select(r => (r.Actualizada - r.FechaCreacion).TotalHours).Where(h => h > 0).ToList();
+        if (!tiempos.Any()) return "No hay datos suficientes para calcular el tiempo medio.";
+        var medio = Math.Round(tiempos.Average(), 1);
+        return $"El tiempo medio de resolución global es **{medio} horas** ({Math.Round(medio / 24, 1)} días), calculado sobre {resueltas.Count} incidencias resueltas.";
+    }
+
+    private async Task<string> ResumenEstadosAsync()
+    {
+        var total     = await _context.Incidencias.CountAsync();
+        var abiertas  = await _context.Incidencias.CountAsync(i => i.Estado == Estados.Abierta);
+        var enProceso = await _context.Incidencias.CountAsync(i => i.Estado == Estados.EnProceso);
+        var resueltas = await _context.Incidencias.CountAsync(i => i.Estado == Estados.Resuelta);
+        var cerradas  = await _context.Incidencias.CountAsync(i => i.Estado == Estados.Cerrada);
+
+        return $"De un total de **{total}** incidencias: {abiertas} abiertas, {enProceso} en proceso, {resueltas} resueltas y {cerradas} cerradas.";
+    }
+
+    private async Task<string> SinAsignarAsync()
+    {
+        var total = await _context.Incidencias
+            .CountAsync(i => i.TecnicoAsignadoId == null &&
+                             (i.Estado == Estados.Abierta || i.Estado == Estados.EnProceso));
+        if (total == 0) return "No hay incidencias activas sin técnico asignado en este momento.";
+        return $"Hay **{total}** incidencia{(total == 1 ? "" : "s")} activa{(total == 1 ? "" : "s")} sin técnico asignado.";
     }
 
     // GET: api/Incidencias/stats
@@ -593,7 +844,21 @@ public class IncidenciasController : ControllerBase
             IncidenciaId = id
         });
 
+        // Notificar a suscriptores
+        await NotificarSuscriptoresAsync(id, usuarioId,
+            $"[Seguimiento] Incidencia #{id} asignada a {tecnicoNombre}: {incidencia.Titulo}");
+
         await _context.SaveChangesAsync();
+
+        // Email al técnico asignado
+        var tecnicoEmail = await _context.Usuarios
+            .Where(u => u.Id == usuarioId)
+            .Select(u => u.Email)
+            .FirstOrDefaultAsync();
+        if (!string.IsNullOrEmpty(tecnicoEmail))
+            await _email.EnviarAsignacionAsync(tecnicoEmail, tecnicoNombre,
+                id, incidencia.Titulo, incidencia.Descripcion,
+                incidencia.Prioridad, incidencia.Categoria);
 
         // SignalR: avisar en tiempo real
         await _hub.Clients.Group("admins-tecnicos")
@@ -629,5 +894,48 @@ public class IncidenciasController : ControllerBase
 
         await _context.SaveChangesAsync();
         return Ok(new { actualizadas, mensaje = $"{actualizadas} incidencias clasificadas correctamente." });
+    }
+
+    // GET: api/Incidencias/{id}/suscrito
+    [HttpGet("{id}/suscrito")]
+    public async Task<IActionResult> GetSuscrito(int id)
+    {
+        var usuarioId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        var suscrito = await _context.Suscripciones
+            .AnyAsync(s => s.IncidenciaId == id && s.UsuarioId == usuarioId);
+        return Ok(new { suscrito });
+    }
+
+    // POST: api/Incidencias/{id}/suscribir
+    [HttpPost("{id}/suscribir")]
+    [Authorize(Roles = "Tecnico,Admin")]
+    public async Task<IActionResult> Suscribir(int id)
+    {
+        var usuarioId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        if (!await _context.Incidencias.AnyAsync(i => i.Id == id)) return NotFound();
+        if (await _context.Suscripciones.AnyAsync(s => s.IncidenciaId == id && s.UsuarioId == usuarioId))
+            return Ok(new { suscrito = true });
+
+        _context.Suscripciones.Add(new SuscripcionIncidencia
+        {
+            UsuarioId    = usuarioId,
+            IncidenciaId = id
+        });
+        await _context.SaveChangesAsync();
+        return Ok(new { suscrito = true });
+    }
+
+    // DELETE: api/Incidencias/{id}/suscribir
+    [HttpDelete("{id}/suscribir")]
+    [Authorize(Roles = "Tecnico,Admin")]
+    public async Task<IActionResult> Desuscribir(int id)
+    {
+        var usuarioId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        var s = await _context.Suscripciones
+            .FirstOrDefaultAsync(s => s.IncidenciaId == id && s.UsuarioId == usuarioId);
+        if (s == null) return NotFound();
+        _context.Suscripciones.Remove(s);
+        await _context.SaveChangesAsync();
+        return Ok(new { suscrito = false });
     }
 }
