@@ -143,9 +143,9 @@ Abrir `Desktop/Desktop.csproj` en Visual Studio y ejecutar con F5.
 | GET | `/api/Incidencias/{id}/suscrito` | Comprobar si el usuario está suscrito | Técnico, Admin |
 | POST | `/api/Incidencias/{id}/suscribir` | Suscribirse a una incidencia | Técnico, Admin |
 | DELETE | `/api/Incidencias/{id}/suscribir` | Desuscribirse de una incidencia | Técnico, Admin |
-| GET | `/api/Incidencias/consulta` | Consulta del asistente fijo (`?tipo=X&categoria=Y`) | Admin |
+| GET | `/api/Incidencias/consulta` | Consulta del asistente fijo| Admin |
 | GET | `/api/Incidencias/{id}/sugerencia` | Sugerencia de solución IA para una incidencia | Técnico, Admin |
-| POST | `/api/Incidencias/consulta-libre` | Asistente IA en lenguaje natural (`{pregunta}`) | Admin |
+| POST | `/api/Incidencias/consulta-libre` | Asistente IA en lenguaje natural| Admin |
 
 ### Comentarios
 
