@@ -1,0 +1,84 @@
+<Page x:Class="Desktop.Views.UsuariosPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      Title="Usuarios" Background="#F0F2F5">
+    <Grid Margin="24,20,24,20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <TextBlock Grid.Row="0" Text="Gestión de Usuarios"
+                   FontSize="22" FontWeight="Bold" Foreground="#161D35" Margin="0,0,0,18"/>
+
+        <!-- Table -->
+        <Border Grid.Row="1" Background="White" CornerRadius="10" Padding="0">
+            <Border.Effect><DropShadowEffect BlurRadius="10" Opacity="0.07" ShadowDepth="2"/></Border.Effect>
+            <DataGrid x:Name="GridUsuarios" AutoGenerateColumns="False"
+                      IsReadOnly="False" CanUserAddRows="False" CanUserDeleteRows="False"
+                      GridLinesVisibility="Horizontal" BorderThickness="0"
+                      HeadersVisibility="Column" RowHeight="42" FontSize="13"
+                      Background="White" RowBackground="White"
+                      AlternatingRowBackground="#F8FAFF"
+                      HorizontalGridLinesBrush="#F0F2F5">
+                <DataGrid.ColumnHeaderStyle>
+                    <Style TargetType="DataGridColumnHeader">
+                        <Setter Property="Background" Value="#161D35"/>
+                        <Setter Property="Foreground" Value="White"/>
+                        <Setter Property="FontWeight" Value="SemiBold"/>
+                        <Setter Property="FontSize" Value="12"/>
+                        <Setter Property="Padding" Value="14,10"/>
+                        <Setter Property="BorderThickness" Value="0"/>
+                    </Style>
+                </DataGrid.ColumnHeaderStyle>
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="60" IsReadOnly="True"/>
+                    <DataGridTextColumn Header="Nombre" Binding="{Binding Nombre}" Width="200" IsReadOnly="True"/>
+                    <DataGridTextColumn Header="Email" Binding="{Binding Email}" Width="*" IsReadOnly="True"/>
+                    <DataGridTemplateColumn Header="Rol" Width="160">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Border CornerRadius="4" Padding="8,3" HorizontalAlignment="Left"
+                                        Background="{Binding RolColor}">
+                                    <TextBlock Text="{Binding Rol}" FontSize="12" FontWeight="SemiBold"
+                                               Foreground="White"/>
+                                </Border>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn Header="Cambiar rol" Width="220">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal" Margin="8,4">
+                                    <ComboBox x:Name="CmbRol" Width="110" Height="28" FontSize="12"
+                                              SelectedValue="{Binding Rol, Mode=OneTime}"
+                                              SelectedValuePath="Content"
+                                              Tag="{Binding Id}">
+                                        <ComboBoxItem Content="Usuario"/>
+                                        <ComboBoxItem Content="Tecnico"/>
+                                        <ComboBoxItem Content="Admin"/>
+                                    </ComboBox>
+                                    <Button Content="Guardar" Margin="6,0,0,0" Padding="8,4"
+                                            FontSize="12" Background="#0D6EFD" Foreground="White"
+                                            BorderThickness="0" Cursor="Hand"
+                                            Tag="{Binding Id}"
+                                            Click="BtnGuardarRol_Click">
+                                        <Button.Template>
+                                            <ControlTemplate TargetType="Button">
+                                                <Border Background="{TemplateBinding Background}"
+                                                        CornerRadius="5" Padding="{TemplateBinding Padding}">
+                                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                </Border>
+                                            </ControlTemplate>
+                                        </Button.Template>
+                                    </Button>
+                                </StackPanel>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+        </Border>
+    </Grid>
+</Page>

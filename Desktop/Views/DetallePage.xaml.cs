@@ -117,6 +117,7 @@ public partial class DetallePage : Page
 
             await CargarAuditoria();
             await CargarSuscripcion();
+            await CargarSugerenciaIA();
         }
         catch (Exception ex)
         {
@@ -270,6 +271,26 @@ public partial class DetallePage : Page
         {
             MessageBox.Show($"Error al cambiar suscripción: {ex.Message}");
         }
+    }
+
+    private async Task CargarSugerenciaIA()
+    {
+        try
+        {
+            var res = await MainWindow.ApiClient.GetAsync($"/api/Incidencias/{_incidenciaId}/sugerencia");
+            if (!res.IsSuccessStatusCode) return;
+            var json = await res.Content.ReadAsStringAsync();
+            var obj  = JsonSerializer.Deserialize<JsonElement>(json, JsonOpts);
+            var texto = obj.TryGetProperty("sugerencia", out var s) ? s.GetString() : null;
+            if (string.IsNullOrWhiteSpace(texto)) return;
+
+            Dispatcher.Invoke(() =>
+            {
+                TxtSugerencia.Text = texto;
+                PanelSugerencia.Visibility = Visibility.Visible;
+            });
+        }
+        catch { /* no crítico */ }
     }
 
     private void BtnVolver_Click(object sender, RoutedEventArgs e)

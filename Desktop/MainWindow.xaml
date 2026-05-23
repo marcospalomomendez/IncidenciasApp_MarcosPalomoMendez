@@ -42,7 +42,9 @@
                         Style="{StaticResource NavBtn}"
                         Click="BtnNavDashboard_Click">
                     <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="&#x2302;" FontSize="16" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                        <Viewbox Width="16" Height="16" Margin="0,0,10,0" VerticalAlignment="Center">
+                            <Path Fill="White" Data="M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L2 8.207V13.5A1.5 1.5 0 0 0 3.5 15h9a1.5 1.5 0 0 0 1.5-1.5V8.207l.646.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.707 1.5ZM13 7.207V13.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5V7.207l5-5 5 5Z"/>
+                        </Viewbox>
                         <TextBlock Text="Dashboard" VerticalAlignment="Center"/>
                     </StackPanel>
                 </Button>
@@ -50,8 +52,32 @@
                         Style="{StaticResource NavBtn}"
                         Click="BtnNavIncidencias_Click">
                     <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="&#x2261;" FontSize="16" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                        <Viewbox Width="16" Height="16" Margin="0,0,10,0" VerticalAlignment="Center">
+                            <Path Fill="White" Data="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5z"/>
+                        </Viewbox>
                         <TextBlock Text="Incidencias" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+                <Button x:Name="BtnNavUsuarios"
+                        Style="{StaticResource NavBtn}"
+                        Visibility="Collapsed"
+                        Click="BtnNavUsuarios_Click">
+                    <StackPanel Orientation="Horizontal">
+                        <Viewbox Width="16" Height="16" Margin="0,0,10,0" VerticalAlignment="Center">
+                            <Path Fill="White" Data="M15 14s1 0 1-1-1-4-5-4-5 3-5 4 1 1 1 1h8Zm-7.978-1A.261.261 0 0 1 7 12.996c.001-.264.167-1.03.76-1.72C8.312 10.629 9.282 10 11 10c1.717 0 2.687.63 3.24 1.276.593.69.758 1.457.76 1.72l-.008.002-.014.002H7.022ZM11 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4Zm3-2a3 3 0 1 1-6 0 3 3 0 0 1 6 0ZM6.936 9.28a5.88 5.88 0 0 0-1.23-.247A7.35 7.35 0 0 0 5 9c-4 0-5 3-5 4 0 .667.333 1 1 1h4.216A2.238 2.238 0 0 1 5 13c0-1.01.377-2.042 1.09-2.904.243-.294.526-.569.846-.816ZM4.92 10A5.493 5.493 0 0 0 4 13H1c0-.26.164-1.03.76-1.724.545-.636 1.492-1.256 3.16-1.275ZM1.5 5.5a3 3 0 1 1 6 0 3 3 0 0 1-6 0Zm3-2a2 2 0 1 0 0 4 2 2 0 0 0 0-4Z"/>
+                        </Viewbox>
+                        <TextBlock Text="Usuarios" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+                <Button x:Name="BtnNavAsistente"
+                        Style="{StaticResource NavBtn}"
+                        Visibility="Collapsed"
+                        Click="BtnNavAsistente_Click">
+                    <StackPanel Orientation="Horizontal">
+                        <Viewbox Width="16" Height="16" Margin="0,0,10,0" VerticalAlignment="Center">
+                            <Path Fill="White" Data="M6 12.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5ZM3 8.062C3 6.76 4.235 5.765 5.53 5.886a26.58 26.58 0 0 0 4.94 0C11.765 5.765 13 6.76 13 8.062v1.157a.933.933 0 0 1-.765.935c-.845.147-2.34.346-4.235.346-1.895 0-3.39-.2-4.235-.346A.933.933 0 0 1 3 9.219V8.062Zm4.542-.827a.25.25 0 0 0-.217.068l-.92.9a24.767 24.767 0 0 1-1.871-.183.25.25 0 0 0-.068.495c.55.076 1.232.149 2.02.193a.25.25 0 0 0 .189-.071l.754-.736.847 1.71a.25.25 0 0 0 .404.062l.932-.97a25.286 25.286 0 0 0 1.922-.188.25.25 0 0 0-.068-.495c-.538.074-1.207.145-1.98.189a.25.25 0 0 0-.166.076l-.754.785-.842-1.7a.25.25 0 0 0-.182-.134ZM8.5 1.866a1 1 0 1 0-1 0V3h-2A4.5 4.5 0 0 0 1 7.5V8a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1v1a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-1a1 1 0 0 0 1-1V9a1 1 0 0 0-1-1v-.5A4.5 4.5 0 0 0 10.5 3h-2V1.866ZM14 7.5V13a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V7.5A3.5 3.5 0 0 1 5.5 4h5A3.5 3.5 0 0 1 14 7.5Z"/>
+                        </Viewbox>
+                        <TextBlock Text="Asistente" VerticalAlignment="Center"/>
                     </StackPanel>
                 </Button>
             </StackPanel>
@@ -93,7 +119,9 @@
                 Background="#1A2340" Padding="20,13"
                 Visibility="Collapsed" Panel.ZIndex="100">
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                <TextBlock Text="🔔" FontSize="15" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                <Viewbox Width="15" Height="15" Margin="0,0,10,0" VerticalAlignment="Center">
+                    <Path Fill="White" Data="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2ZM8 1.918l-.797.161A4.002 4.002 0 0 0 4 6c0 .628-.134 2.197-.459 3.742-.16.767-.376 1.566-.663 2.258h10.244c-.287-.692-.502-1.491-.663-2.258C12.134 8.197 12 6.628 12 6a4.002 4.002 0 0 0-3.203-3.92L8 1.917ZM14.22 12c.223.447.481.801.78 1H1c.299-.199.557-.553.78-1C2.68 10.2 3 6.88 3 6c0-2.42 1.72-4.44 4.005-4.901a1 1 0 1 1 1.99 0A5.002 5.002 0 0 1 13 6c0 .88.32 4.2 1.22 6Z"/>
+                </Viewbox>
                 <TextBlock x:Name="TxtToastMsg" Foreground="White" FontSize="13"
                            VerticalAlignment="Center" TextWrapping="Wrap"/>
             </StackPanel>

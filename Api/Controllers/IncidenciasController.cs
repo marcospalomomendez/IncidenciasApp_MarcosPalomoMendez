@@ -938,4 +938,113 @@ public class IncidenciasController : ControllerBase
         await _context.SaveChangesAsync();
         return Ok(new { suscrito = false });
     }
+
+    // GET: api/Incidencias/{id}/sugerencia
+    [HttpGet("{id}/sugerencia")]
+    [Authorize(Roles = "Tecnico,Admin")]
+    public async Task<IActionResult> Sugerencia(int id)
+    {
+        var inc = await _context.Incidencias.FindAsync(id);
+        if (inc == null) return NotFound();
+
+        var texto = await _clasificador.SugerirSolucionAsync(
+            inc.Titulo, inc.Descripcion, inc.Categoria ?? "Otro");
+
+        return Ok(new { sugerencia = texto ?? "No se pudo generar una sugerencia en este momento." });
+    }
+
+    // POST: api/Incidencias/consulta-libre
+    [HttpPost("consulta-libre")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> ConsultaLibre([FromBody] Api.DTOs.ConsultaLibreDto dto)
+    {
+        if (string.IsNullOrWhiteSpace(dto.Pregunta)) return BadRequest();
+
+        var ahora = DateTime.UtcNow;
+
+        // Totales globales
+        var total     = await _context.Incidencias.CountAsync();
+        var abiertas  = await _context.Incidencias.CountAsync(i => i.Estado == Estados.Abierta);
+        var enProceso = await _context.Incidencias.CountAsync(i => i.Estado == Estados.EnProceso);
+        var resueltas = await _context.Incidencias.CountAsync(i => i.Estado == Estados.Resuelta);
+        var cerradas  = await _context.Incidencias.CountAsync(i => i.Estado == Estados.Cerrada);
+        var sinAsignar = await _context.Incidencias.CountAsync(i =>
+            i.TecnicoAsignadoId == null &&
+            (i.Estado == Estados.Abierta || i.Estado == Estados.EnProceso));
+
+        var todasActivas = await _context.Incidencias
+            .Where(i => i.Estado != Estados.Resuelta && i.Estado != Estados.Cerrada)
+            .ToListAsync();
+        var slaExcedido = todasActivas.Count(i =>
+        {
+            var limite = i.Prioridad switch { "Critica" => 2.0, "Alta" => 8.0, "Media" => 24.0, _ => 72.0 };
+            return (ahora - i.FechaCreacion).TotalHours > limite;
+        });
+
+        // Desglose por técnico: activas, resueltas y por categoría
+        var tecnicos = await _context.Usuarios
+            .Where(u => u.Rol == Roles.Tecnico)
+            .ToListAsync();
+
+        var todasIncidencias = await _context.Incidencias
+            .Where(i => i.TecnicoAsignadoId != null)
+            .ToListAsync();
+
+        var tecnicoLineas = new List<string>();
+        foreach (var tec in tecnicos)
+        {
+            var propias      = todasIncidencias.Where(i => i.TecnicoAsignadoId == tec.Id).ToList();
+            if (propias.Count == 0) continue;
+            var actTec       = propias.Count(i => i.Estado == Estados.Abierta || i.Estado == Estados.EnProceso);
+            var resTec       = propias.Count(i => i.Estado == Estados.Resuelta || i.Estado == Estados.Cerrada);
+            var catActivas   = propias.Where(i => i.Estado == Estados.Abierta || i.Estado == Estados.EnProceso)
+                                      .GroupBy(i => i.Categoria ?? "Otro")
+                                      .Select(g => $"{g.Key}:{g.Count()}")
+                                      .ToList();
+            var catResueltas = propias.Where(i => i.Estado == Estados.Resuelta || i.Estado == Estados.Cerrada)
+                                      .GroupBy(i => i.Categoria ?? "Otro")
+                                      .Select(g => $"{g.Key}:{g.Count()}")
+                                      .ToList();
+            tecnicoLineas.Add(
+                $"{tec.Nombre} — abierta_o_en_proceso:{actTec} (cats:[{string.Join(", ", catActivas)}]), " +
+                $"resuelta_o_cerrada:{resTec} (cats:[{string.Join(", ", catResueltas)}])");
+        }
+
+        // Desglose por categoría
+        var categorias = await _context.Incidencias
+            .Where(i => i.Categoria != null)
+            .GroupBy(i => i.Categoria)
+            .Select(g => new { Cat = g.Key, Total = g.Count() })
+            .OrderByDescending(g => g.Total)
+            .ToListAsync();
+
+        // Tiempo medio de resolución global
+        var incResueltas = await _context.Incidencias
+            .Where(i => (i.Estado == Estados.Resuelta || i.Estado == Estados.Cerrada)
+                        && i.FechaActualizacion != null)
+            .Select(i => new { i.FechaCreacion, Actualizada = i.FechaActualizacion!.Value })
+            .ToListAsync();
+        var tiempoMedio = incResueltas.Count > 0
+            ? Math.Round(incResueltas
+                .Select(r => (r.Actualizada - r.FechaCreacion).TotalHours)
+                .Where(h => h > 0).DefaultIfEmpty(0).Average(), 1)
+            : (double?)null;
+
+        var contexto = $"""
+            RESUMEN GLOBAL:
+            - Total incidencias: {total} ({abiertas} abiertas, {enProceso} en proceso, {resueltas} resueltas, {cerradas} cerradas)
+            - Sin técnico asignado: {sinAsignar}
+            - Con SLA excedido: {slaExcedido}
+            - Tiempo medio de resolución: {(tiempoMedio.HasValue ? $"{tiempoMedio} horas ({Math.Round(tiempoMedio.Value / 24, 1)} días)" : "sin datos")}
+
+            DESGLOSE POR TÉCNICO:
+            {string.Join("\n", tecnicoLineas)}
+
+            INCIDENCIAS POR CATEGORÍA:
+            {string.Join(", ", categorias.Select(c => $"{c.Cat}: {c.Total}"))}
+            """;
+
+        var respuesta = await _clasificador.ConsultarLibreAsync(dto.Pregunta, contexto);
+        return Ok(new { respuesta = respuesta ?? "No se pudo obtener respuesta en este momento." });
+    }
 }

@@ -190,54 +190,81 @@
                 </Grid>
             </Border>
 
-            <!-- Auditoría -->
-            <Border Grid.Column="2" Background="White" CornerRadius="10" Padding="18,16">
-                <Border.Effect><DropShadowEffect BlurRadius="10" Opacity="0.07" ShadowDepth="2"/></Border.Effect>
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>
+            <!-- Columna derecha: Sugerencia IA + Auditoría -->
+            <Grid Grid.Column="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
 
-                    <TextBlock Grid.Row="0" Text="Auditoría" FontSize="14" FontWeight="Bold"
-                               Foreground="#161D35" Margin="0,0,0,14"/>
+                <!-- Sugerencia IA: altura máxima con scroll -->
+                <Border Grid.Row="0" x:Name="PanelSugerencia"
+                        Background="White" CornerRadius="10"
+                        Padding="18,14" Margin="0,0,0,12"
+                        MaxHeight="220"
+                        BorderBrush="#0D6EFD" BorderThickness="0,0,0,3"
+                        Visibility="Collapsed">
+                    <Border.Effect><DropShadowEffect BlurRadius="10" Opacity="0.07" ShadowDepth="2"/></Border.Effect>
+                    <DockPanel>
+                        <TextBlock DockPanel.Dock="Top" Text="Sugerencia IA" FontSize="14" FontWeight="Bold"
+                                   Foreground="#161D35" Margin="0,0,0,10"/>
+                        <ScrollViewer VerticalScrollBarVisibility="Auto">
+                            <TextBlock x:Name="TxtSugerencia" TextWrapping="Wrap" FontSize="12"
+                                       Foreground="#374151" LineHeight="18"/>
+                        </ScrollViewer>
+                    </DockPanel>
+                </Border>
 
-                    <ListBox Grid.Row="1" x:Name="LstAuditoria" BorderThickness="0"
-                             Background="Transparent">
-                        <ListBox.ItemContainerStyle>
-                            <Style TargetType="ListBoxItem">
-                                <Setter Property="Padding" Value="0"/>
-                                <Setter Property="Background" Value="Transparent"/>
-                                <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                            </Style>
-                        </ListBox.ItemContainerStyle>
-                        <ListBox.ItemTemplate>
-                            <DataTemplate>
-                                <Grid Margin="0,0,0,10">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="32"/>
-                                        <ColumnDefinition Width="8"/>
-                                        <ColumnDefinition Width="*"/>
-                                    </Grid.ColumnDefinitions>
-                                    <Border Grid.Column="0" Width="32" Height="32" CornerRadius="16"
-                                            Background="{Binding IconColor}">
-                                        <TextBlock Text="{Binding Icon}" FontSize="13" FontWeight="Bold"
-                                                   Foreground="White"
-                                                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                    </Border>
-                                    <StackPanel Grid.Column="2" VerticalAlignment="Center">
-                                        <TextBlock Text="{Binding Descripcion}" FontSize="12"
-                                                   FontWeight="SemiBold" Foreground="#1F2937"
-                                                   TextWrapping="Wrap"/>
-                                        <TextBlock Text="{Binding MetaLinea}" FontSize="10"
-                                                   Foreground="#9AA3B0" Margin="0,2,0,0"/>
-                                    </StackPanel>
-                                </Grid>
-                            </DataTemplate>
-                        </ListBox.ItemTemplate>
-                    </ListBox>
-                </Grid>
-            </Border>
+                <!-- Auditoría: ocupa el espacio restante con scroll -->
+                <Border Grid.Row="1" Background="White" CornerRadius="10" Padding="18,16">
+                    <Border.Effect><DropShadowEffect BlurRadius="10" Opacity="0.07" ShadowDepth="2"/></Border.Effect>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Grid.Row="0" Text="Auditoría" FontSize="14" FontWeight="Bold"
+                                   Foreground="#161D35" Margin="0,0,0,14"/>
+
+                        <ListBox Grid.Row="1" x:Name="LstAuditoria" BorderThickness="0"
+                                 Background="Transparent"
+                                 ScrollViewer.VerticalScrollBarVisibility="Auto">
+                            <ListBox.ItemContainerStyle>
+                                <Style TargetType="ListBoxItem">
+                                    <Setter Property="Padding" Value="0"/>
+                                    <Setter Property="Background" Value="Transparent"/>
+                                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                                </Style>
+                            </ListBox.ItemContainerStyle>
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid Margin="0,0,0,10">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="32"/>
+                                            <ColumnDefinition Width="8"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Border Grid.Column="0" Width="32" Height="32" CornerRadius="16"
+                                                Background="{Binding IconColor}">
+                                            <TextBlock Text="{Binding Icon}" FontSize="13" FontWeight="Bold"
+                                                       Foreground="White"
+                                                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Border>
+                                        <StackPanel Grid.Column="2" VerticalAlignment="Center">
+                                            <TextBlock Text="{Binding Descripcion}" FontSize="12"
+                                                       FontWeight="SemiBold" Foreground="#1F2937"
+                                                       TextWrapping="Wrap"/>
+                                            <TextBlock Text="{Binding MetaLinea}" FontSize="10"
+                                                       Foreground="#9AA3B0" Margin="0,2,0,0"/>
+                                        </StackPanel>
+                                    </Grid>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                    </Grid>
+                </Border>
+            </Grid>
         </Grid>
     </Grid>
 </Page>

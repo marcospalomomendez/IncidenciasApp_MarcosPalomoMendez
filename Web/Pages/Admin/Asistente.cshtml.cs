@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Net.Http.Headers;
+using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using Shared;
@@ -26,7 +27,7 @@ public class AsistenteModel : PageModel
         return Page();
     }
 
-    public async Task<IActionResult> OnPostAsync(string tipo, string? categoria = null)
+    public async Task<IActionResult> OnPostAsync(string tipo, string? categoria = null, string? preguntaLibre = null)
     {
         var token = HttpContext.Session.GetString("Token");
         if (string.IsNullOrEmpty(token)) return RedirectToPage("/Login");
@@ -39,39 +40,65 @@ public class AsistenteModel : PageModel
             return RedirectToPage();
         }
 
-        var pregunta = tipo switch
-        {
-            "tecnico-mas-activas"             => "¿Cuál es el técnico con más incidencias activas?",
-            "tecnico-mas-resueltas"           => "¿Cuál es el técnico con más incidencias resueltas?",
-            "tecnico-mas-resueltas-categoria" => $"¿Cuál es el técnico con más resueltas de categoría {categoria}?",
-            "categoria-mas-incidencias"       => "¿Cuál es la categoría con más incidencias?",
-            "sin-asignar"                     => "¿Cuántas incidencias están sin asignar?",
-            "resumen-estados"                 => "¿Cómo está el resumen de estados actual?",
-            "sla-excedido"                    => "¿Qué incidencias tienen el SLA excedido?",
-            "tiempo-medio"                    => "¿Cuál es el tiempo medio de resolución?",
-            _                                 => tipo
-        };
-
         var client = _http.CreateClient("Api");
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-        var url = $"/api/Incidencias/consulta?tipo={Uri.EscapeDataString(tipo)}";
-        if (!string.IsNullOrEmpty(categoria)) url += $"&categoria={Uri.EscapeDataString(categoria)}";
+        string pregunta;
+        string respuesta = "No se pudo obtener respuesta del servidor.";
 
-        var respuesta = "No se pudo obtener respuesta del servidor.";
-        try
+        if (tipo == "libre")
         {
-            var res = await client.GetAsync(url);
-            if (res.IsSuccessStatusCode)
+            pregunta = preguntaLibre?.Trim() ?? "";
+            if (string.IsNullOrEmpty(pregunta)) return RedirectToPage();
+
+            try
             {
-                var json = await res.Content.ReadAsStringAsync();
-                var doc = JsonSerializer.Deserialize<JsonElement>(json,
-                    new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-                if (doc.TryGetProperty("respuesta", out var r))
-                    respuesta = r.GetString() ?? respuesta;
+                var body = new StringContent(
+                    JsonSerializer.Serialize(new { pregunta }),
+                    Encoding.UTF8, "application/json");
+                var res = await client.PostAsync("/api/Incidencias/consulta-libre", body);
+                if (res.IsSuccessStatusCode)
+                {
+                    var json = await res.Content.ReadAsStringAsync();
+                    var doc = JsonSerializer.Deserialize<JsonElement>(json,
+                        new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                    if (doc.TryGetProperty("respuesta", out var r))
+                        respuesta = r.GetString() ?? respuesta;
+                }
             }
+            catch { }
         }
-        catch { }
+        else
+        {
+            pregunta = tipo switch
+            {
+                "tecnico-mas-activas"             => "¿Cuál es el técnico con más incidencias activas?",
+                "tecnico-mas-resueltas"           => "¿Cuál es el técnico con más incidencias resueltas?",
+                "tecnico-mas-resueltas-categoria" => $"¿Cuál es el técnico con más resueltas de categoría {categoria}?",
+                "categoria-mas-incidencias"       => "¿Cuál es la categoría con más incidencias?",
+                "sin-asignar"                     => "¿Cuántas incidencias están sin asignar?",
+                "resumen-estados"                 => "¿Cómo está el resumen de estados actual?",
+                "sla-excedido"                    => "¿Qué incidencias tienen el SLA excedido?",
+                "tiempo-medio"                    => "¿Cuál es el tiempo medio de resolución?",
+                _                                 => tipo
+            };
+
+            try
+            {
+                var url = $"/api/Incidencias/consulta?tipo={Uri.EscapeDataString(tipo)}";
+                if (!string.IsNullOrEmpty(categoria)) url += $"&categoria={Uri.EscapeDataString(categoria)}";
+                var res = await client.GetAsync(url);
+                if (res.IsSuccessStatusCode)
+                {
+                    var json = await res.Content.ReadAsStringAsync();
+                    var doc = JsonSerializer.Deserialize<JsonElement>(json,
+                        new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                    if (doc.TryGetProperty("respuesta", out var r))
+                        respuesta = r.GetString() ?? respuesta;
+                }
+            }
+            catch { }
+        }
 
         Historial.Add((pregunta, respuesta));
         GuardarHistorial();

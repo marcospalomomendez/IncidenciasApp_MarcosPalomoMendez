@@ -38,17 +38,17 @@ public partial class MainWindow : Window
         TxtSidebarNombre.Text = Nombre.Length > 18 ? Nombre[..15] + "…" : Nombre;
         TxtSidebarRol.Text = Rol;
         TxtAvatar.Text = Nombre.Length > 0 ? Nombre[0].ToString().ToUpper() : "U";
-        BtnNavDashboard.Visibility = Rol == Roles.Admin ? Visibility.Visible : Visibility.Collapsed;
+        BtnNavDashboard.Visibility  = Rol == Roles.Admin ? Visibility.Visible : Visibility.Collapsed;
+        BtnNavUsuarios.Visibility   = Rol == Roles.Admin ? Visibility.Visible : Visibility.Collapsed;
+        BtnNavAsistente.Visibility  = Rol == Roles.Admin ? Visibility.Visible : Visibility.Collapsed;
     }
 
     public void SetActiveNav(string page)
     {
-        BtnNavDashboard.Style = page == "dashboard"
-            ? (Style)FindResource("NavBtnActive")
-            : (Style)FindResource("NavBtn");
-        BtnNavIncidencias.Style = page == "incidencias"
-            ? (Style)FindResource("NavBtnActive")
-            : (Style)FindResource("NavBtn");
+        BtnNavDashboard.Style  = page == "dashboard"  ? (Style)FindResource("NavBtnActive") : (Style)FindResource("NavBtn");
+        BtnNavIncidencias.Style = page == "incidencias" ? (Style)FindResource("NavBtnActive") : (Style)FindResource("NavBtn");
+        BtnNavUsuarios.Style   = page == "usuarios"   ? (Style)FindResource("NavBtnActive") : (Style)FindResource("NavBtn");
+        BtnNavAsistente.Style  = page == "asistente"  ? (Style)FindResource("NavBtnActive") : (Style)FindResource("NavBtn");
     }
 
     // ── SignalR ───────────────────────────────────────────────────────────
@@ -116,6 +116,18 @@ public partial class MainWindow : Window
     {
         SetActiveNav("incidencias");
         MainFrame.Navigate(new Views.IncidenciasPage());
+    }
+
+    private void BtnNavUsuarios_Click(object sender, RoutedEventArgs e)
+    {
+        SetActiveNav("usuarios");
+        MainFrame.Navigate(new Views.UsuariosPage());
+    }
+
+    private void BtnNavAsistente_Click(object sender, RoutedEventArgs e)
+    {
+        SetActiveNav("asistente");
+        MainFrame.Navigate(new Views.AsistentePage());
     }
 
     private async void BtnSidebarLogout_Click(object sender, RoutedEventArgs e)

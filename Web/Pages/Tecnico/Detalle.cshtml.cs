@@ -15,6 +15,7 @@ public class DetalleModel : PageModel
     public IncidenciaDetalleModel? Incidencia { get; set; }
     public List<AuditoriaEntryModel> Auditoria { get; set; } = new();
     public bool EsSuscrito { get; set; }
+    public string? SugerenciaIA { get; set; }
     public string ReturnUrl { get; set; } = "/Tecnico/Index";
 
     public DetalleModel(IHttpClientFactory httpClientFactory)
@@ -64,6 +65,15 @@ public class DetalleModel : PageModel
             EsSuscrito = obj.GetProperty("suscrito").GetBoolean();
         }
 
+        var resSugerencia = await client.GetAsync($"/api/Incidencias/{id}/sugerencia");
+        if (resSugerencia.IsSuccessStatusCode)
+        {
+            var jsonSug = await resSugerencia.Content.ReadAsStringAsync();
+            var obj = JsonSerializer.Deserialize<JsonElement>(jsonSug,
+                new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            SugerenciaIA = obj.GetProperty("sugerencia").GetString();
+        }
+
         return Page();
     }
 
@@ -86,13 +96,22 @@ public class DetalleModel : PageModel
         return RedirectToPage(new { id, returnUrl });
     }
 
-    public async Task<IActionResult> OnPostCambiarEstadoAsync(int id, string nuevoEstado, string returnUrl = "")
+    public async Task<IActionResult> OnPostCambiarEstadoAsync(int id, string nuevoEstado, string returnUrl = "", string? solucion = null)
     {
         var client = GetClient();
         var body = new StringContent(
             JsonSerializer.Serialize(new { estado = nuevoEstado }),
             Encoding.UTF8, "application/json");
         await client.PutAsync($"/api/Incidencias/{id}", body);
+
+        if (nuevoEstado == "Resuelta" && !string.IsNullOrWhiteSpace(solucion))
+        {
+            var comentBody = new StringContent(
+                JsonSerializer.Serialize(new { contenido = $"Solución: {solucion.Trim()}", incidenciaId = id }),
+                Encoding.UTF8, "application/json");
+            await client.PostAsync("/api/Comentarios", comentBody);
+        }
+
         return RedirectToPage(new { id, returnUrl });
     }
 

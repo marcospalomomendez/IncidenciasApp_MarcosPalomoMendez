@@ -132,6 +132,23 @@
                 </div>
             </div>
 
+            <!-- Pregunta libre -->
+            <div class="pt-3 border-top">
+                <div class="text-muted mb-2" style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px">
+                    Pregunta libre
+                </div>
+                <form method="post" class="d-flex gap-2">
+                    <input type="hidden" name="tipo" value="libre" />
+                    <input type="text" name="preguntaLibre"
+                           class="form-control form-control-sm"
+                           placeholder="Escribe cualquier pregunta sobre el sistema..."
+                           required style="flex:1" />
+                    <button type="submit" class="btn btn-sm btn-primary">
+                        <i class="bi bi-send"></i>
+                    </button>
+                </form>
+            </div>
+
             <!-- Limpiar -->
             @if (Model.Historial.Any())
             {
