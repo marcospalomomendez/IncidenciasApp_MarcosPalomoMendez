@@ -1,6 +1,6 @@
 # IncidenciasApp — Marcos Palomo Méndez
 
-Sistema de gestión de incidencias desarrollado como TFG. Permite a usuarios reportar incidencias, a técnicos gestionarlas y a administradores supervisar el sistema desde tres clientes distintos sobre una misma API REST.
+Sistema inteligente de gestión de incidencias IT desarrollado como TFG de DAM. Permite a usuarios reportar incidencias, a técnicos gestionarlas y a administradores supervisar el sistema desde tres clientes distintos sobre una misma API REST, con clasificación y priorización automática por IA, sugerencia de soluciones y asistente de consultas en lenguaje natural.
 
 ---
 
@@ -12,7 +12,8 @@ Sistema de gestión de incidencias desarrollado como TFG. Permite a usuarios rep
 | **Tiempo real** | SignalR (WebSockets) |
 | **Email** | MailKit + Mailtrap (sandbox) |
 | **Web** | Razor Pages + Bootstrap 5 |
-| **Desktop** | WPF (.NET 8) + WebView2 |
+| **Desktop** | WPF (.NET 8) |
+| **IA** | Groq API (LLaMA 3.1 8B) — clasificación, priorización, sugerencias y asistente |
 | **Shared** | Librería de constantes compartida entre proyectos |
 | **Tests** | xUnit + WebApplicationFactory |
 
@@ -37,8 +38,11 @@ Sistema de gestión de incidencias desarrollado como TFG. Permite a usuarios rep
 - **Notificaciones email** — al asignar técnico y al cambiar estado; los administradores reciben aviso cuando una incidencia pasa a Resuelta
 - **Seguimiento de incidencias** — un técnico puede suscribirse a cualquier incidencia (no solo las suyas) para recibir notificaciones de cambios de estado
 - **Auditoría** — cada cambio de estado, técnico o creación queda registrado en la tabla `Auditoria` (quién, qué, cuándo)
-- **Clasificación IA** — la API llama a Groq (LLaMA 3) para sugerir categoría y prioridad al crear una incidencia
-- **Asistente de consultas** — panel admin con 8 preguntas fijas sobre el sistema (técnico más activo, SLA excedido, tiempo medio, etc.)
+- **Clasificación y priorización IA** — al crear una incidencia, Groq (LLaMA 3.1) asigna automáticamente categoría y prioridad; el usuario solo actúa como fallback
+- **Sugerencia de solución IA** — al abrir el detalle de una incidencia (técnico o admin), la IA propone pasos de resolución basándose en el título, descripción y categoría
+- **Asistente de consultas fijas** — panel admin con 8 preguntas predefinidas sobre el sistema (técnico más activo, SLA excedido, tiempo medio, categoría con más incidencias, etc.)
+- **Asistente libre en lenguaje natural** — el admin puede formular cualquier pregunta sobre el sistema; la IA responde con contexto enriquecido (desglose por técnico, categorías, tiempos) y rechaza preguntas fuera del ámbito del sistema
+- **Solución obligatoria al resolver** — al marcar una incidencia como Resuelta, técnico y admin deben describir la solución aplicada; se guarda automáticamente como comentario
 - **Exportación** — informes en Excel (EPPlus) y PDF (QuestPDF) descargables desde el panel admin
 - **Filtros avanzados** — por estado, categoría, prioridad, SLA, sin asignar, mis incidencias y búsqueda de texto libre
 
@@ -136,10 +140,12 @@ Abrir `Desktop/Desktop.csproj` en Visual Studio y ejecutar con F5.
 | GET | `/api/Incidencias/stats` | Estadísticas del dashboard admin | Admin |
 | GET | `/api/Incidencias/mis-stats` | Stats personales del técnico | Técnico, Admin |
 | GET | `/api/Incidencias/{id}/auditoria` | Historial de auditoría | Admin |
-| GET | `/api/Incidencias/suscrito/{id}` | Comprobar si el usuario está suscrito | Técnico, Admin |
+| GET | `/api/Incidencias/{id}/suscrito` | Comprobar si el usuario está suscrito | Técnico, Admin |
 | POST | `/api/Incidencias/{id}/suscribir` | Suscribirse a una incidencia | Técnico, Admin |
 | DELETE | `/api/Incidencias/{id}/suscribir` | Desuscribirse de una incidencia | Técnico, Admin |
-| GET | `/api/Incidencias/consulta` | Consulta del asistente | Admin |
+| GET | `/api/Incidencias/consulta` | Consulta del asistente fijo (`?tipo=X&categoria=Y`) | Admin |
+| GET | `/api/Incidencias/{id}/sugerencia` | Sugerencia de solución IA para una incidencia | Técnico, Admin |
+| POST | `/api/Incidencias/consulta-libre` | Asistente IA en lenguaje natural (`{pregunta}`) | Admin |
 
 ### Comentarios
 
@@ -190,7 +196,7 @@ IncidenciasApp/
 │   │   └── Usuario/        # Index, Crear, Detalle
 │   └── Models/
 ├── Desktop/
-│   └── Views/              # LoginPage, IncidenciasPage, DetallePage
+│   └── Views/              # LoginPage, IncidenciasPage, DetallePage, UsuariosPage, AsistentePage
 └── Shared/                 # Constantes: Roles, Estados, Prioridades, Categorias
 ```
 
