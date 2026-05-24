@@ -345,6 +345,14 @@ public class IncidenciasController : ControllerBase
 
             incidencia.TecnicoAsignadoId = dto.TecnicoAsignadoId.Value;
 
+            // Notificación en BD para el técnico asignado
+            _context.Notificaciones.Add(new Notificacion
+            {
+                UsuarioId    = dto.TecnicoAsignadoId.Value,
+                Mensaje      = $"Se te asignó la incidencia #{id}: {incidencia.Titulo}",
+                IncidenciaId = id
+            });
+
             // Email al nuevo técnico asignado
             var tecnicoEmailActualizar = await _context.Usuarios
                 .Where(u => u.Id == dto.TecnicoAsignadoId.Value)
