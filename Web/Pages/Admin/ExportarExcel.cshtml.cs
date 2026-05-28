@@ -36,7 +36,7 @@ public class ExportarExcelModel : PageModel
         // Subtítulo del período
         var periodoCell = ws.Cell(1, 1);
         periodoCell.Value = $"Informe semanal: {desde:dd/MM/yyyy} — {DateTime.Now:dd/MM/yyyy}";
-        ws.Range(1, 1, 1, 9).Merge();
+        ws.Range(1, 1, 1, 10).Merge();
         periodoCell.Style.Font.Bold = true;
         periodoCell.Style.Font.FontSize = 12;
         periodoCell.Style.Fill.BackgroundColor = XLColor.FromHtml("#1F3864");
@@ -45,7 +45,7 @@ public class ExportarExcelModel : PageModel
 
         // Cabecera
         string[] headers = ["ID", "Título", "Descripción", "Estado", "Prioridad",
-                             "Categoría", "Técnico Asignado (ID)", "Fecha Creación", "Fecha Actualización"];
+                             "Categoría", "Técnico Asignado (ID)", "Fecha Creación", "Fecha Actualización", "Fecha Cierre"];
         for (int c = 0; c < headers.Length; c++)
         {
             var cell = ws.Cell(2, c + 1);
@@ -70,6 +70,9 @@ public class ExportarExcelModel : PageModel
             ws.Cell(row, 7).Value = i.TecnicoAsignadoId.HasValue ? i.TecnicoAsignadoId.Value.ToString() : "";
             ws.Cell(row, 8).Value = i.FechaCreacion.ToString("dd/MM/yyyy HH:mm");
             ws.Cell(row, 9).Value = i.FechaActualizacion?.ToString("dd/MM/yyyy HH:mm") ?? "";
+            ws.Cell(row, 10).Value = i.Estado == "Cerrada"
+                ? i.FechaActualizacion?.ToString("dd/MM/yyyy HH:mm") ?? ""
+                : "";
 
             if (r % 2 == 1)
                 ws.Row(row).Style.Fill.BackgroundColor = XLColor.FromHtml("#F2F2F2");
