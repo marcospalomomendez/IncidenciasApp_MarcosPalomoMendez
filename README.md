@@ -43,7 +43,7 @@ Sistema inteligente de gestión de incidencias IT desarrollado como TFG de DAM. 
 - **Asistente de consultas fijas** — panel admin con 8 preguntas predefinidas sobre el sistema (técnico más activo, SLA excedido, tiempo medio, categoría con más incidencias, etc.)
 - **Asistente libre en lenguaje natural** — el admin puede formular cualquier pregunta sobre el sistema; la IA responde con contexto enriquecido (desglose por técnico, categorías, tiempos) y rechaza preguntas fuera del ámbito del sistema
 - **Solución obligatoria al resolver** — al marcar una incidencia como Resuelta, técnico y admin deben describir la solución aplicada; se guarda automáticamente como comentario
-- **Exportación** — informes en Excel (EPPlus) y PDF (QuestPDF) descargables desde el panel admin
+- **Exportación** — informes en Excel (ClosedXML) y PDF (QuestPDF) descargables desde el panel admin
 - **Filtros avanzados** — por estado, categoría, prioridad, SLA, sin asignar, mis incidencias y búsqueda de texto libre
 
 ---
